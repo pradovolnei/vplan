@@ -46,31 +46,6 @@
     </tbody>
   </table>
 </div>
-<select id="total_reg" name="total_reg" onChange="groupSalesByField()">
-  <option value=""> Total por </option>
-  <option value="-1"> Linhas </option>
-  <?php
-    $xColum = 0;
-    foreach($colunas as $coluna) {
-      echo "<option value='$xColum'>" . htmlspecialchars($coluna) . "</option>";
-      $xColum++;
-    }
-  ?>
-</select>
-<select id="group_by" name="group_by" onChange="groupSalesByField()">
-  <option value=""> Agrupar por </option>
-  <?php
-    $xColum = 0;
-    foreach($colunas as $coluna) {
-      echo "<option value='$xColum'>" . htmlspecialchars($coluna) . "</option>";
-      $xColum++;
-    }
-  ?>
-</select>
-
-
-
-
 
 <section class="content" style="margin-top: 20px;">
 
@@ -80,18 +55,43 @@
           <!-- Default box -->
           <div class="card collapsed-card">
             <div class="card-header">
-              <h3 class="card-title">Title</h3>
+              <h3 class="card-title">Dados da Tabela</h3>
 
               <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                   <i class="fas fa-plus"></i>
                 </button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-                  <i class="fas fa-times"></i>
-                </button>
               </div>
             </div>
             <div class="card-body" style="display: none;">
+              <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                <div class="col-4">
+                  <select id="total_reg" name="total_reg" onChange="groupSalesByField()" class="form-control">
+                    <option value=""> Total por </option>
+                    <option value="-1"> Linhas </option>
+                    <?php
+                      $xColum = 0;
+                      foreach($colunas as $coluna) {
+                        echo "<option value='$xColum'>" . htmlspecialchars($coluna) . "</option>";
+                        $xColum++;
+                      }
+                    ?>
+                  </select>
+                </div>
+
+                <div class="col-4">
+                  <select id="group_by" name="group_by" onChange="groupSalesByField()" class="form-control">
+                    <option value=""> Agrupar por </option>
+                    <?php
+                      $xColum = 0;
+                      foreach($colunas as $coluna) {
+                        echo "<option value='$xColum'>" . htmlspecialchars($coluna) . "</option>";
+                        $xColum++;
+                      }
+                    ?>
+                  </select>
+                </div>
+              </div>
             <div id="result">
               <table id="planilhaTabela" class="table table-bordered">
                 <thead>
@@ -125,31 +125,61 @@
     </div>
   </section>
 
+<section class="content" style="margin-top: 20px;">
+
+  <div class="container-fluid">
+    <div id="eixos">
+      <div class="row">
+        <div class="col-3"></div>
+        <div class="col-3">
+          <select id="eixoX" class="form-control">
+            <option >Eixo X</option>
+            <?php 
+              foreach($colunas as $coluna) {
+                echo "<option value='$coluna'>" . htmlspecialchars($coluna) . "</option>";
+              }
+            ?>
+                      
+          </select>
+        </div>
+
+        <div class="col-3">
+          <select id="eixoY" class="form-control">
+            <option >Eixo Y</option>
+            <?php 
+              foreach($colunas as $coluna) {
+                echo "<option value='$coluna'>" . htmlspecialchars($coluna) . "</option>";
+              }
+            ?>
+
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-12">
+        <!-- Seleção de tipo de gráfico -->
+        <div class="container mt-4">
+            <label for="tipoGrafico">Selecione o tipo de gráfico:</label>
+            <select id="tipoGrafico" class="form-control">
+                <option value="">Selecione um Gráfico</option>
+                <option value="bar">Barra</option>
+                <option value="line">Linha</option>
+                <option value="pie">Pizza</option> <!-- Nova opção de gráfico de pizza -->
+            </select>
+
+            <!-- Canvas onde o gráfico será renderizado -->
+            <canvas id="graficoCanvas" class="mt-4"></canvas>
+        </div>
+      </div>
+    </div> 
+  </div>                 
+</section>
 
 
-<select id="eixoX" class="form-control">
-	<option value="Total">Total</option>
-	<option value="Agrupado">Agrupado</option>
 
-</select>
-<select id="eixoY" class="form-control" multiple="">
-	<option value="Total">Total</option>
-	<option value="Agrupado">Agrupado</option>
 
-</select>
-
-<!-- Seleção de tipo de gráfico -->
-<div class="container mt-4">
-    <label for="tipoGrafico">Selecione o tipo de gráfico:</label>
-    <select id="tipoGrafico" class="form-control">
-        <option value="bar">Barra</option>
-        <option value="line">Linha</option>
-        <option value="pie">Pizza</option> <!-- Nova opção de gráfico de pizza -->
-    </select>
-
-    <!-- Canvas onde o gráfico será renderizado -->
-    <canvas id="graficoCanvas" class="mt-4"></canvas>
-</div>
 
 <script>
 function groupSalesByField() {
@@ -201,9 +231,31 @@ function groupSalesByField() {
                        <td> ${salesData[key].toFixed(2)}</td>
                      </tr>`;
     }
-    resultHtml += "</table>";
+    resultHtml += "</table> <a href='' class='btn btn-danger'> Desagrupar </a>";
+
+    eixosHtml = `<div class="row">
+                    <div class="col-3"></div>
+                    <div class="col-3">
+                      <select id="eixoX" class="form-control">
+                        <option value="Agrupado">Agrupado</option>                                  
+                      </select>
+                    </div>
+
+                    <div class="col-3">
+                      <select id="eixoY" class="form-control">
+                        <option value="Total">Total</option>
+                      </select>
+                    </div>
+                  </div>`;
+
+    document.getElementById("eixos").innerHTML = eixosHtml;
 
     document.getElementById("result").innerHTML = resultHtml;
+    gerarGrafico("Agrupado", "Total");
+
+    document.getElementById("eixoX").value = "Agrupado";
+    document.getElementById("eixoY").value = "Total";
+
   }
 }
 
@@ -213,12 +265,28 @@ function groupSalesByField() {
 <script>
 	let chartInstance = null;
 
-	function gerarGrafico() {
-		var tipoGrafico = document.getElementById('tipoGrafico').value;
-		var eixoX = document.getElementById('eixoX').value;
-		var eixoYSelect = document.getElementById('eixoY');
-		var eixoY = Array.from(eixoYSelect.selectedOptions).map(option => option.value); // Pegando todos os campos selecionados no eixo Y
+	function gerarGrafico(abaX = null, abaY = null) {
+    var tipoGrafico = document.getElementById('tipoGrafico').value;
 
+    let eixoX, eixoY2;
+
+    // Verifica se abaX e abaY não estão nulos ou vazios
+    if (abaX && abaY) {
+        eixoX = abaX;
+        eixoY2 = abaY;
+    } else {
+        eixoX = document.getElementById('eixoX').value;
+        eixoY2 = document.getElementById('eixoY').value;
+    }
+		
+    if(tipoGrafico != ""){
+    //var tipoGrafico = 'bar';
+		
+    var eixoY = [eixoY2];
+		//var eixoYSelect = document.getElementById('eixoY');
+		//var eixoY = Array.from(eixoYSelect.selectedOptions).map(option => option.value); // Pegando todos os campos selecionados no eixo Y
+    //console.log(eixoY2);
+    //console.log(eixoY);
 		// Limitar a seleção de campos Y no gráfico de pizza
 		if (tipoGrafico === 'pie' && eixoY.length > 1) {
 			alert('O gráfico de pizza só pode exibir um campo no eixo Y.');
@@ -328,6 +396,8 @@ function groupSalesByField() {
 		if (tipoGrafico === 'pie') {
 			chartInstance.options.scales = {}; // Remove as escalas do gráfico de pizza
 		}
+    } 
+    
 	}
 
 	// Eventos onchange para os selects

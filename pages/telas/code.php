@@ -102,11 +102,16 @@
                     ?>
                   </select>
                 </div>
+
+                <div class="col-2">
+                      <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert' > Inserir linha </a>
+                </div>
               </div>
             <div id="result">
               <table id="planilhaTabela" class="table table-bordered">
                 <thead>
                   <tr>
+                    <th> Linha </th>
                   <?php
                     foreach($colunas as $coluna) {
                       echo "<th>" . htmlspecialchars($coluna) . "</th>";
@@ -118,6 +123,12 @@
                     <?php
                       for($linha = 1; $linha <= $totalLinhas; $linha++) {
                         echo "<tr>";
+                        echo "<td> ";
+                        ?>
+                          <a href='#' style="font-size: 0.7rem; color: #F00" onclick='confirmDeleteLine(event, "<?=base64_encode(9)?>", "<?=base64_encode($id_plan)?>", <?=$linha?>)'> <i class='nav-icon fas fa-trash'></i> </a>
+                        <?php
+                        echo " ".$linha;
+                        echo "</td>";
                         for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
                           $valor = isset($dadosTabela[$coluna][$linha]) ? htmlspecialchars($dadosTabela[$coluna][$linha]) : '';
                           echo "<td>" . $valor . "</td>";
@@ -189,7 +200,43 @@
 </section>
 
 
+<!-- Modal -->
+<div class="modal fade" id="modal-insert">
+  <div class="modal-dialog">
+    <form action="?l=<?=base64_encode(8)?>" method="POST" enctype="multipart/form-data">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Registro Manual Linha <?=$totalLinhas+1?></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card-body">
+            <!-- Campo hidden para o ID -->
+            <input type="hidden" class="form-control" name="id" value="<?=$id_plan?>">
+            <input type="hidden" class="form-control" name="new_line" value="<?=$totalLinhas+1?>">
 
+            <?php
+              $xColum = 0;
+              foreach($colunas as $coluna) {
+                echo '<div class="form-group row">';
+                echo '<input type="text" class="form-control" name="valor[]" placeholder="'.$coluna.'">';
+                echo '</div>';
+              }
+            ?>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </form>
+  </div>
+  <!-- /.modal-dialog -->
+</div>
 
 
 <script>
@@ -419,4 +466,15 @@ function groupSalesByField() {
 	// Gerar gráfico inicialmente
 	gerarGrafico();
 
+</script>
+
+<script>
+  function confirmDeleteLine(event, l, p, li) {
+      console.log(123);
+      event.preventDefault(); // Impede o link de ser seguido imediatamente
+      if (confirm("Os dados da linha "+li+" serão perdidos. Deseja continuar?")) {
+          // Se o usuário confirmar, redireciona para o link
+          window.location.href = "home.php?l=" + l + "&li=" + li + "&p=" + p;
+      }
+  }
 </script>

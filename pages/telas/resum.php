@@ -5,7 +5,7 @@
         <h1 class="m-0"> Home</small></h1>
       </div><!-- /.col -->
       <div class="col-sm-6">
-        <button data-toggle="modal" data-target="#modal-default"> Nova Planilha</button>
+        <button data-toggle="modal" data-id="5555" data-target="#modal-default"> Nova Planilha</button>
       </div><!-- /.col -->
     </div><!-- /.row -->
   </div><!-- /.container-fluid -->
@@ -55,10 +55,10 @@
           <div class="card-body">
             <?php
               $group_id = $_SESSION["group_id"];
-              $sql = "SELECT p.id, p.name, p.created_at, u.name as 'user'
+              $sql = "SELECT p.id, p.name, p.created_at, u.name as 'user', p.obs
                       FROM plans p
                       LEFT JOIN users u ON u.id = p.created_by
-                      WHERE p.group_id=$group_id";
+                      WHERE p.group_id=$group_id AND deleted_at IS NULL";
               $exec = mysqli_query($conn, $sql);
 
               if(mysqli_num_rows($exec) > 0){
@@ -69,6 +69,7 @@
                 <th>Planilha</th>
                 <th>Criada em</th>
                 <th>Criada por</th>
+                <th>Ação</th>
               </tr>
               </thead>
               <tbody>
@@ -79,6 +80,12 @@
                     echo "<td> <a href='?l=".base64_encode(5)."&p=".base64_encode($row["id"])."'>".$row["name"]."</a> </td>";
                     echo "<td> ".date("d/m/Y H:i", strtotime($row["created_at"]))." </td>";
                     echo "<td> ".$row["user"]." </td>";
+                    echo "<td align='center'> ";
+                    echo "<a class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit' data-obs='".$row["obs"]."' data-id='".$row["id"]."' data-nome='".$row["name"]."' ><i class='nav-icon fas fa-pen'></i> </a>";
+                    ?>
+                    <a style='color: #F00' class='open-modal-edit' href='#' onclick='confirmDelete(event, "<?=base64_encode(7)?>", "<?=base64_encode($row["id"])?>")' ><i class='nav-icon fas fa-trash'></i> </a>
+                    <?php
+                    echo " </td>";
 
                     echo "</tr>";
                   }
@@ -103,3 +110,45 @@
   </div>
   <!-- /.container-fluid -->
 </section>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-edit">
+  <div class="modal-dialog">
+    <form action="?l=<?=base64_encode(6)?>" method="POST" enctype="multipart/form-data">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Editar Planilha</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Campo hidden para o ID -->
+          <input type="hidden" class="form-control" id="id_plan" name="id">
+          <input type="text" class="form-control" id="name_plan" name="name" placeholder="Nome da Planilha" value="" required>
+        </div>
+        <div class="modal-body">
+          <textarea id="obs_plan" class="form-control" name="obs" placeholder="Observações"></textarea>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </form>
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+
+<script>
+  function confirmDelete(event, l, p) {
+      console.log(123);
+      event.preventDefault(); // Impede o link de ser seguido imediatamente
+      if (confirm("Todos os dados serão perdidos. Deseja realmente remover esta planilha?")) {
+          // Se o usuário confirmar, redireciona para o link
+          window.location.href = "home.php?l=" + l + "&p=" + p;
+      }
+  }
+</script>

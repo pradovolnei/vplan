@@ -97,6 +97,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $page[3] = "pages/telas/processar_upload.php";
       $page[4] = "pages/telas/dados_plan.php";
       $page[5] = "pages/telas/code.php";
+      $page[6] = "pages/telas/save_plan.php";
+      $page[7] = "pages/telas/remove_plan.php";
 
       include $page[$link];
     ?>
@@ -164,5 +166,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
     });
   });
 </script>
+
+<!-- Script para manipular os dados -->
+<script>
+  $(document).ready(function() {
+    // Quando o link de abrir modal for clicado
+    $('.open-modal-edit').on('click', function() {
+      // Pegando os valores dos atributos data-id e data-nome do link clicado
+      var id = $(this).data('id');
+      var nome = $(this).data('nome');
+      var obs = $(this).data('obs');
+
+      // Preenchendo os campos da modal com os valores capturados
+      $('#id_plan').val(id);  // Campo hidden para o ID
+      $('#name_plan').val(nome); // Campo de nome da planilha
+      $('#obs_plan').val(obs);
+
+    });
+  });
+</script>
+
 </body>
 </html>

@@ -1,20 +1,31 @@
 <?php
   $id_plan = base64_decode($_GET["p"]);
 
+  $sql_pan = "SELECT * FROM plans WHERE id=$id_plan AND group_id=".$_SESSION["group_id"];
+  $exec_plan = mysqli_query($conn, $sql_pan);
+  if(mysqli_num_rows($exec_plan) <= 0){
+    echo "<script> window.location='home.php' </script>";
+  }
+
   $sql_titulo = "SELECT * FROM data_plans WHERE plan_id=$id_plan";
   $colunas = [];
   $totalColunas = 0;
   $totalLinhas = 0;
   $dadosTabela = [];
   $exec_titulo = mysqli_query($conn, $sql_titulo);
-  while($row = mysqli_fetch_array($exec_titulo)){
-    if($row["number_line"] == 0)
-      $colunas[] = htmlspecialchars($row["value"]);
+  if(mysqli_num_rows($exec_titulo) > 0){
+    while($row = mysqli_fetch_array($exec_titulo)){
+      if($row["number_line"] == 0)
+        $colunas[] = htmlspecialchars($row["value"]);
 
-      $dadosTabela[$row["number_column"]][$row["number_line"]] = $row["value"];
-      $totalColunas = $row["number_column"];
-      $totalLinhas = $row["number_line"];
+        $dadosTabela[$row["number_column"]][$row["number_line"]] = $row["value"];
+        $totalColunas = $row["number_column"];
+        $totalLinhas = $row["number_line"];
+    }
+  }else{
+    echo "<script> window.location='home.php' </script>";
   }
+
 ?>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -67,7 +78,7 @@
               <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
                 <div class="col-4">
                   <select id="total_reg" name="total_reg" onChange="groupSalesByField()" class="form-control">
-                    <option value=""> Total por </option>
+                    <option value=""> Total de </option>
                     <option value="-1"> Linhas </option>
                     <?php
                       $xColum = 0;
@@ -134,19 +145,19 @@
         <div class="col-3">
           <select id="eixoX" class="form-control">
             <option >Eixo X</option>
-            <?php 
+            <?php
               foreach($colunas as $coluna) {
                 echo "<option value='$coluna'>" . htmlspecialchars($coluna) . "</option>";
               }
             ?>
-                      
+
           </select>
         </div>
 
         <div class="col-3">
           <select id="eixoY" class="form-control">
             <option >Eixo Y</option>
-            <?php 
+            <?php
               foreach($colunas as $coluna) {
                 echo "<option value='$coluna'>" . htmlspecialchars($coluna) . "</option>";
               }
@@ -156,7 +167,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="row">
       <div class="col-12">
         <!-- Seleção de tipo de gráfico -->
@@ -173,8 +184,8 @@
             <canvas id="graficoCanvas" class="mt-4"></canvas>
         </div>
       </div>
-    </div> 
-  </div>                 
+    </div>
+  </div>
 </section>
 
 
@@ -237,7 +248,7 @@ function groupSalesByField() {
                     <div class="col-3"></div>
                     <div class="col-3">
                       <select id="eixoX" class="form-control">
-                        <option value="Agrupado">Agrupado</option>                                  
+                        <option value="Agrupado">Agrupado</option>
                       </select>
                     </div>
 
@@ -278,10 +289,10 @@ function groupSalesByField() {
         eixoX = document.getElementById('eixoX').value;
         eixoY2 = document.getElementById('eixoY').value;
     }
-		
+
     if(tipoGrafico != ""){
     //var tipoGrafico = 'bar';
-		
+
     var eixoY = [eixoY2];
 		//var eixoYSelect = document.getElementById('eixoY');
 		//var eixoY = Array.from(eixoYSelect.selectedOptions).map(option => option.value); // Pegando todos os campos selecionados no eixo Y
@@ -396,8 +407,8 @@ function groupSalesByField() {
 		if (tipoGrafico === 'pie') {
 			chartInstance.options.scales = {}; // Remove as escalas do gráfico de pizza
 		}
-    } 
-    
+    }
+
 	}
 
 	// Eventos onchange para os selects

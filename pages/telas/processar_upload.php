@@ -53,6 +53,6 @@
     echo 'Nenhum arquivo foi enviado.';
 }
 
-echo "<script> window.location='?l=".base64_encode(4)."&p=".base64_encode($id_plan)."'; </script>";
+echo "<script> window.location='?l=".base64_encode(5)."&p=".base64_encode($id_plan)."'; </script>";
 
 ?>

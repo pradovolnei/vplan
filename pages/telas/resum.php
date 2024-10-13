@@ -5,7 +5,7 @@
         <h1 class="m-0"> Home</small></h1>
       </div><!-- /.col -->
       <div class="col-sm-6">
-        <button data-toggle="modal" data-id="5555" data-target="#modal-default"> Nova Planilha</button>
+        <button data-toggle="modal" data-id="5555" data-target="#modal-default" class="btn btn-block btn-outline-info"> Nova Planilha</button>
       </div><!-- /.col -->
     </div><!-- /.row -->
   </div><!-- /.container-fluid -->
@@ -45,25 +45,29 @@
 <section class="content">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-2"> </div>
-      <div class="col-8">
+      <div class="col-12">
         <div class="card">
           <div class="card-header">
             <h3 class="card-title">Planilhas da Equipe</h3>
           </div>
           <!-- /.card-header -->
-          <div class="card-body">
+          <div class="card-body table-responsive p-0">
             <?php
               $group_id = $_SESSION["group_id"];
               $sql = "SELECT p.id, p.name, p.created_at, u.name as 'user', p.obs
                       FROM plans p
                       LEFT JOIN users u ON u.id = p.created_by
-                      WHERE p.group_id=$group_id AND deleted_at IS NULL";
+                      WHERE p.group_id=$group_id AND deleted_at IS NULL ";
+
+              if(isset($_GET["s"])){
+                $string_s = $_GET["s"];
+                $sql .= " AND (p.name LIKE '%$string_s%' OR u.name LIKE '%$string_s%')";
+              }
               $exec = mysqli_query($conn, $sql);
 
               if(mysqli_num_rows($exec) > 0){
             ?>
-            <table id="example2" class="table table-bordered table-hover">
+            <table  class="table table-bordered table-hover">
               <thead>
               <tr>
                 <th>Planilha</th>
@@ -77,12 +81,18 @@
                   while($row = mysqli_fetch_array($exec)){
                     echo "<tr>";
 
-                    echo "<td> <a href='?l=".base64_encode(5)."&p=".base64_encode($row["id"])."'>".$row["name"]."</a> </td>";
+                    echo "<td>".$row["name"]."</td>";
                     echo "<td> ".date("d/m/Y H:i", strtotime($row["created_at"]))." </td>";
                     echo "<td> ".$row["user"]." </td>";
                     echo "<td align='center'> ";
-                    echo "<a class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit' data-obs='".$row["obs"]."' data-id='".$row["id"]."' data-nome='".$row["name"]."' ><i class='nav-icon fas fa-pen'></i> </a>";
                     ?>
+                    <a style='color: #00F' class='open-modal-edit' href='?l=<?=base64_encode(5)."&p=".base64_encode($row["id"])?>' ><i class='nav-icon fas fa-eye'></i> </a>
+                    &nbsp;
+                    <?php
+                      echo "<a style='color: #0A0' class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit' data-obs='".$row["obs"]."' data-id='".$row["id"]."' data-nome='".$row["name"]."' ><i class='nav-icon fas fa-pen'></i> </a>";
+
+                    ?>
+                    &nbsp;
                     <a style='color: #F00' class='open-modal-edit' href='#' onclick='confirmDelete(event, "<?=base64_encode(7)?>", "<?=base64_encode($row["id"])?>")' ><i class='nav-icon fas fa-trash'></i> </a>
                     <?php
                     echo " </td>";

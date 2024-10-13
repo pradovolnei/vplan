@@ -76,38 +76,42 @@
             </div>
             <div class="card-body" style="display: none;">
               <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
-                <div class="col-4">
+                <div class="col-6">
                   <select id="total_reg" name="total_reg" onChange="groupSalesByField()" class="form-control">
                     <option value=""> Total de </option>
-                    <option value="-1"> Linhas </option>
+                    <option value="-1"> Total de Linhas </option>
                     <?php
                       $xColum = 0;
                       foreach($colunas as $coluna) {
-                        echo "<option value='$xColum'>" . htmlspecialchars($coluna) . "</option>";
+                        echo "<option value='$xColum'>Total de " . htmlspecialchars($coluna) . "</option>";
                         $xColum++;
                       }
                     ?>
                   </select>
                 </div>
 
-                <div class="col-4">
+                <div class="col-6">
                   <select id="group_by" name="group_by" onChange="groupSalesByField()" class="form-control">
                     <option value=""> Agrupar por </option>
                     <?php
                       $xColum = 0;
                       foreach($colunas as $coluna) {
-                        echo "<option value='$xColum'>" . htmlspecialchars($coluna) . "</option>";
+                        echo "<option value='$xColum'>Agrupar por " . htmlspecialchars($coluna) . "</option>";
                         $xColum++;
                       }
                     ?>
                   </select>
                 </div>
 
-                <div class="col-2">
-                      <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert' > Inserir linha </a>
+
+              </div>
+              <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                <div class="col-12">
+                  <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert' > Inserir linha </a>
                 </div>
               </div>
-            <div id="result">
+
+            <div id="result" class="card-body table-responsive p-0">
               <table id="planilhaTabela" class="table table-bordered">
                 <thead>
                   <tr>
@@ -278,7 +282,10 @@ function groupSalesByField() {
 
     // Exibir o resultado em uma tabela
     let resultHtml = `<h3>Agrupado</h3>`;
-    resultHtml += `<table id="planilhaTabela" class="table table-bordered">
+    resultHtml += `
+                  <div class="row">
+                  <div class="col-12">
+                  <table id="planilhaTabela" class="table table-bordered">
                      <thead><tr>
                        <th>Agrupado</th>
                        <th>Total</th>
@@ -289,7 +296,13 @@ function groupSalesByField() {
                        <td> ${salesData[key].toFixed(2)}</td>
                      </tr>`;
     }
-    resultHtml += "</table> <a href='' class='btn btn-danger'> Desagrupar </a>";
+    resultHtml += "</table> </div> </div>";
+    resultHtml += "<div class='row' >";
+    resultHtml += " <div class='col-4'> <a href='' class='btn btn-warning'> Desagrupar Tabela </a> </div> ";
+    resultHtml += " <div class='col-4'> <button id='downloadXLS' onclick='baixarXls()' class='btn btn-success'>Baixar XLS</button> </div> ";
+    resultHtml += " <div class='col-4'> <button id='downloadPDF' onclick='baixarPdf()' class='btn btn-danger'>Baixar PDF</button> </div> ";
+
+    resultHtml += "</div>";
 
     eixosHtml = `<div class="row">
                     <div class="col-3"></div>
@@ -470,11 +483,28 @@ function groupSalesByField() {
 
 <script>
   function confirmDeleteLine(event, l, p, li) {
-      console.log(123);
       event.preventDefault(); // Impede o link de ser seguido imediatamente
       if (confirm("Os dados da linha "+li+" serão perdidos. Deseja continuar?")) {
           // Se o usuário confirmar, redireciona para o link
           window.location.href = "home.php?l=" + l + "&li=" + li + "&p=" + p;
       }
   }
+
+  function baixarXls(){
+      var wb = XLSX.utils.table_to_book(document.getElementById('planilhaTabela'), {sheet: "Sheet1"});
+      XLSX.writeFile(wb, 'tabela.xlsx');
+  }
+
+  function baixarPdf(){
+    var { jsPDF } = window.jspdf;
+      var doc = new jsPDF();
+
+      doc.autoTable({ html: '#planilhaTabela' });
+      doc.save('tabela.pdf');
+  }
+
+
 </script>
+
+
+

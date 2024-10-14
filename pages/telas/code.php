@@ -97,7 +97,7 @@
                     <?php
                       $xColum = 0;
                       foreach($colunas as $coluna) {
-                        echo "<option value='$xColum'>Agrupar por " . htmlspecialchars($coluna) . "</option>";
+                        echo "<option value='$xColum--$coluna'>Agrupar por " . htmlspecialchars($coluna) . "</option>";
                         $xColum++;
                       }
                     ?>
@@ -254,8 +254,10 @@ function groupSalesByField() {
   const rows = table.getElementsByTagName("tr");
   const salesData = {};
 
-  var campos = document.getElementById("group_by");
-  var campo = campos.value;
+  let campos = document.getElementById("group_by").value;
+  let array = campos.split("--");
+  var campo = array[0];
+  var nomecampo = array[1];
 
   var regs = document.getElementById("total_reg");
   var total_reg = regs.value;
@@ -295,7 +297,7 @@ function groupSalesByField() {
                   <div class="col-12">
                   <table id="planilhaTabela" class="table table-bordered">
                      <thead><tr>
-                       <th>Agrupado</th>
+                       <th>`+nomecampo+`</th>
                        <th>Total</th>
                      </tr></thead>`;
     sortedKeys.forEach(key => {
@@ -316,7 +318,7 @@ function groupSalesByField() {
                     <div class="col-3"></div>
                     <div class="col-3">
                       <select id="eixoX" class="form-control">
-                        <option value="Agrupado">Agrupado</option>
+                        <option value="Agrupado">`+nomecampo+`</option>
                       </select>
                     </div>
 

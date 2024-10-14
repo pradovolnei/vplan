@@ -63,6 +63,15 @@
           </select>
 
         </div>
+        <div class="mb-3">
+          <select name="nivel" id="nivel" class="form-control" onchange="verificar()" required >
+            <option value=""> Selecione um nível de usuário </option>
+            <option value="1"> Administrador </option>
+            <option value="2"> Usuário comum </option>
+
+          </select>
+
+        </div>
         <div class="input-group mb-3">
           <input type="password" name="password" id="password" class="form-control" placeholder="Senha" onkeyup="verificar()" onkeydown="verificar()" onkeypress="verificar()" required >
           <div class="input-group-append">

@@ -11,6 +11,7 @@
   $password = encripta($_POST["password"]);
   $cpf = $_POST["cpf"];
   $grupo = $_POST["grupo"];
+  $nivel = $_POST["nivel"];
 
   $sqlVerif = "SELECT * FROM users WHERE email='$email'";
   $execVerif = mysqli_query($conn, $sqlVerif);
@@ -20,7 +21,7 @@
   }
 
   $sqlInsert = "INSERT INTO users (name, group_id, type, email, password, status, cpf, created_at)
-                  VALUES ('$nome', $grupo, 1, '$email', '$password', 1, '$cpf', NOW())";
+                  VALUES ('$nome', $grupo, $nivel, '$email', '$password', 1, '$cpf', NOW())";
   mysqli_query($conn, $sqlInsert);
 
   echo "<script> alert('Usuário cadastrado com sucesso!'); window.location='login.php'; </script>";

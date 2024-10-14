@@ -1,5 +1,6 @@
 <?php
   $id_plan = base64_decode($_GET["p"]);
+  $id_nivel = $_SESSION["type"];
 
   $sql_pan = "SELECT * FROM plans WHERE id=$id_plan AND group_id=".$_SESSION["group_id"];
   $exec_plan = mysqli_query($conn, $sql_pan);
@@ -105,11 +106,13 @@
 
 
               </div>
+              <?php if($id_nivel == 1){ ?>
               <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
                 <div class="col-12">
                   <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert' > Inserir linha </a>
                 </div>
               </div>
+              <?php } ?>
 
             <div id="result" class="card-body table-responsive p-0">
               <table id="planilhaTabela" class="table table-bordered">
@@ -128,9 +131,11 @@
                       for($linha = 1; $linha <= $totalLinhas; $linha++) {
                         echo "<tr>";
                         echo "<td> ";
+                        if($id_nivel == 1){
                         ?>
                           <a href='#' style="font-size: 0.7rem; color: #F00" onclick='confirmDeleteLine(event, "<?=base64_encode(9)?>", "<?=base64_encode($id_plan)?>", <?=$linha?>)'> <i class='nav-icon fas fa-trash'></i> </a>
                         <?php
+                        }
                         echo " ".$linha;
                         echo "</td>";
                         for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
@@ -280,6 +285,9 @@ function groupSalesByField() {
       }
     }
 
+    // Ordenar as chaves (produtos ou datas)
+    const sortedKeys = Object.keys(salesData).sort();  // Ordenação alfabética por chave
+
     // Exibir o resultado em uma tabela
     let resultHtml = `<h3>Agrupado</h3>`;
     resultHtml += `
@@ -290,12 +298,12 @@ function groupSalesByField() {
                        <th>Agrupado</th>
                        <th>Total</th>
                      </tr></thead>`;
-    for (const key in salesData) {
+    sortedKeys.forEach(key => {
       resultHtml += `<tr>
                        <td>${key}</td>
                        <td> ${salesData[key].toFixed(2)}</td>
                      </tr>`;
-    }
+    });
     resultHtml += "</table> </div> </div>";
     resultHtml += "<div class='row' >";
     resultHtml += " <div class='col-4'> <a href='' class='btn btn-warning'> Desagrupar Tabela </a> </div> ";

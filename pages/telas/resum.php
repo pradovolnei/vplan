@@ -1,12 +1,17 @@
+<?php
+  $id_nivel = $_SESSION["type"];
+?>
 <div class="content-header">
   <div class="container">
     <div class="row mb-2">
       <div class="col-sm-6">
         <h1 class="m-0"> Home</small></h1>
       </div><!-- /.col -->
+      <?php if($id_nivel == 1){ ?>
       <div class="col-sm-6">
         <button data-toggle="modal" data-id="5555" data-target="#modal-default" class="btn btn-block btn-outline-info"> Nova Planilha</button>
       </div><!-- /.col -->
+      <?php } ?>
     </div><!-- /.row -->
   </div><!-- /.container-fluid -->
 </div>
@@ -86,15 +91,17 @@
                     echo "<td> ".$row["user"]." </td>";
                     echo "<td align='center'> ";
                     ?>
-                    <a style='color: #00F' class='open-modal-edit' href='?l=<?=base64_encode(5)."&p=".base64_encode($row["id"])?>' ><i class='nav-icon fas fa-eye'></i> </a>
+                    <a style='color: #00F' class='open-modal-edit' title="Visualizar" href='?l=<?=base64_encode(5)."&p=".base64_encode($row["id"])?>' ><i class='nav-icon fas fa-eye'></i> </a>
                     &nbsp;
                     <?php
-                      echo "<a style='color: #0A0' class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit' data-obs='".$row["obs"]."' data-id='".$row["id"]."' data-nome='".$row["name"]."' ><i class='nav-icon fas fa-pen'></i> </a>";
+                      if($id_nivel == 1){
+                        echo "<a style='color: #0A0' title='Editar' class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit' data-obs='".$row["obs"]."' data-id='".$row["id"]."' data-nome='".$row["name"]."' ><i class='nav-icon fas fa-pen'></i> </a>";
 
                     ?>
                     &nbsp;
-                    <a style='color: #F00' class='open-modal-edit' href='#' onclick='confirmDelete(event, "<?=base64_encode(7)?>", "<?=base64_encode($row["id"])?>")' ><i class='nav-icon fas fa-trash'></i> </a>
+                    <a style='color: #F00' class='open-modal-edit' title="Remover" href='#' onclick='confirmDelete(event, "<?=base64_encode(7)?>", "<?=base64_encode($row["id"])?>")' ><i class='nav-icon fas fa-trash'></i> </a>
                     <?php
+                      }
                     echo " </td>";
 
                     echo "</tr>";

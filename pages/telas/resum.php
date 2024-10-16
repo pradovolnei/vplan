@@ -4,14 +4,14 @@
 <div class="content-header">
   <div class="container">
     <div class="row mb-2">
-      <div class="col-sm-6">
-        <h1 class="m-0"> Home</small></h1>
-      </div><!-- /.col -->
-      <?php if($id_nivel == 1){ ?>
-      <div class="col-sm-6">
-        <button data-toggle="modal" data-id="5555" data-target="#modal-default" class="btn btn-block btn-outline-info"> Nova Planilha</button>
-      </div><!-- /.col -->
-      <?php } ?>
+        <?php if($id_nivel == 1){ ?>
+          <div class="col-sm-4" style="margin-top: 10px;">
+            <button data-toggle="modal" data-id="5555" data-target="#modal-manual" class="btn btn-block btn-outline-info"> Criar Planilha Manualmente</button>
+          </div><!-- /.col -->
+          <div class="col-sm-4" style="margin-top: 10px;">
+            <button data-toggle="modal" data-id="5555" data-target="#modal-default" class="btn btn-block btn-outline-info"> Carga xls </button>
+          </div><!-- /.col -->
+        <?php } ?>
     </div><!-- /.row -->
   </div><!-- /.container-fluid -->
 </div>
@@ -31,6 +31,49 @@
       </div>
       <div class="modal-body">
         <input type="file" class="form-control" id="planilha" name="planilha" accept=".xls,.xlsx" required>
+      </div>
+      <div class="modal-body">
+        <textarea id="obs" class="form-control" name="obs" placeholder="Observações"></textarea>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+    </form>
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal-manual">
+  <div class="modal-dialog">
+    <form action="?l=<?=base64_encode(10)?>" method="POST" enctype="multipart/form-data">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Criar tabela</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control" id="name" name="name" placeholder="Nome da Planilha" required>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <a href="#" onclick="adicionarColuna()" class="btn btn-block btn-outline-info" > Adicionar Coluna </a>
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <input type="text" class="form-control" name="coluna_manual[]" id="coluna_manual[]" placeholder="Nome da Coluna" />
+          </div>
+        </div>
+
+        <div id="inputContainer"></div>
       </div>
       <div class="modal-body">
         <textarea id="obs" class="form-control" name="obs" placeholder="Observações"></textarea>
@@ -167,5 +210,45 @@
           // Se o usuário confirmar, redireciona para o link
           window.location.href = "home.php?l=" + l + "&p=" + p;
       }
+  }
+</script>
+
+<script>
+  function adicionarColuna() {
+      // Cria um novo div 'row' para agrupar o input e o botão de remover
+      var rowDiv = document.createElement('div');
+      rowDiv.classList.add('row', 'mb-2', 'input-group');
+
+      // Cria o div 'col-sm-4' para o input
+      var colDiv = document.createElement('div');
+      colDiv.classList.add('col-sm-6');
+
+      // Cria o input de texto
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.name = 'coluna_manual[]';
+      input.id = 'coluna_manual[]';
+      input.placeholder = 'Nome da Coluna';
+      input.classList.add('form-control');
+
+      // Cria o botão de remover
+      var removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remover';
+      removeBtn.classList.add('btn', 'btn-danger');
+
+      // Adiciona evento para remover o input quando o botão for clicado
+      removeBtn.addEventListener('click', function() {
+          rowDiv.remove();
+      });
+
+      // Adiciona o input ao div 'col-sm-4'
+      colDiv.appendChild(input);
+
+      // Adiciona o div 'col-sm-4' e o botão de remover ao div 'row'
+      rowDiv.appendChild(colDiv);
+      rowDiv.appendChild(removeBtn);
+
+      // Adiciona o div 'row' ao container principal
+      document.getElementById('inputContainer').appendChild(rowDiv);
   }
 </script>

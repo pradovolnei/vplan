@@ -108,8 +108,11 @@
               </div>
               <?php if($id_nivel == 1){ ?>
               <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
-                <div class="col-12">
+                <div class="col-6">
                   <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert' > Inserir linha </a>
+                </div>
+                <div class="col-6">
+                  <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-formula' > Inserir cálculo </a>
                 </div>
               </div>
               <?php } ?>
@@ -226,6 +229,49 @@
             <input type="hidden" class="form-control" name="id" value="<?=$id_plan?>">
             <input type="hidden" class="form-control" name="new_line" value="<?=$totalLinhas+1?>">
 
+            <?php
+              $xColum = 0;
+              foreach($colunas as $coluna) {
+                echo '<div class="form-group row">';
+                echo '<input type="text" class="form-control" name="valor[]" placeholder="'.$coluna.'">';
+                echo '</div>';
+              }
+            ?>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </form>
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-formula">
+  <div class="modal-dialog">
+    <form action="?l=<?=base64_encode(11)?>" method="POST" enctype="multipart/form-data">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Nova Fórmula</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card-body">
+            <!-- Campo hidden para o ID -->
+            <input type="hidden" class="form-control" name="id" value="<?=$id_plan?>">
+
+            <div class="row">
+              <div class="col-12">
+                <select name="numerador" name="numerador" > 
+                  <option value> </option>
+                </select>
+              </div>
+            </div>
             <?php
               $xColum = 0;
               foreach($colunas as $coluna) {

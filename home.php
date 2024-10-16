@@ -102,6 +102,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $page[8] = "pages/telas/registro_manual.php";
       $page[9] = "pages/telas/remove_line.php";
       $page[10] = "pages/telas/tabela_manual.php";
+      $page[11] = "pages/telas/nova_formula.php";
 
       include $page[$link];
     ?>

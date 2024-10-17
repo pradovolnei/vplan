@@ -19,12 +19,26 @@
       if($row["number_line"] == 0)
         $colunas[] = htmlspecialchars($row["value"]);
 
-        $dadosTabela[$row["number_column"]][$row["number_line"]] = $row["value"];
+        $dadosTabela[$row["number_line"]][$row["number_column"]] = $row["value"];
         $totalColunas = $row["number_column"];
         $totalLinhas = $row["number_line"];
     }
   }else{
     echo "<script> window.location='home.php' </script>";
+  }
+
+  function calcularFormula($base, $colunas, $alterar){
+
+    $baseFormatada = str_replace($colunas, $alterar, $base);
+
+    if (preg_match('#^[0-9+\-*/(). ]+$#', $baseFormatada)) {
+        // Avaliar a expressão matematicamente
+        $resultado = eval('return ' . $baseFormatada . ';');
+    } else {
+        $resultado = '###';
+    }
+
+    return $resultado;
   }
 
 ?>
@@ -49,7 +63,7 @@
           for($linha = 1; $linha <= $totalLinhas; $linha++) {
             echo "<tr>";
             for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
-              $valor = isset($dadosTabela[$coluna][$linha]) ? htmlspecialchars($dadosTabela[$coluna][$linha]) : '';
+              $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
               echo "<td>" . $valor . "</td>";
             }
             echo "</tr>";
@@ -108,11 +122,14 @@
               </div>
               <?php if($id_nivel == 1){ ?>
               <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
-                <div class="col-6">
+                <div class="col-4">
                   <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert' > Inserir linha </a>
                 </div>
-                <div class="col-6">
+                <div class="col-4">
                   <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-formula' > Inserir cálculo </a>
+                </div>
+                <div class="col-4">
+                  <a href="#" class="btn btn-block btn-outline-danger" data-toggle='modal' data-target='#modal-remove' > Remover Fórmula </a>
                 </div>
               </div>
               <?php } ?>
@@ -125,6 +142,13 @@
                   <?php
                     foreach($colunas as $coluna) {
                       echo "<th>" . htmlspecialchars($coluna) . "</th>";
+                    }
+
+                    $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
+                    $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+                    while($row = mysqli_fetch_array($execFormulas)){
+                      echo "<th>" . htmlspecialchars($row["name"]) . "</th>";
                     }
                   ?>
                 </tr>
@@ -142,8 +166,15 @@
                         echo " ".$linha;
                         echo "</td>";
                         for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
-                          $valor = isset($dadosTabela[$coluna][$linha]) ? htmlspecialchars($dadosTabela[$coluna][$linha]) : '';
+                          $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
                           echo "<td>" . $valor . "</td>";
+                        }
+
+                        $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
+                        $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+                        while($row = mysqli_fetch_array($execFormulas)){
+                          echo "<td>" . calcularFormula($row["formula"], $colunas, $dadosTabela[$linha]) . "</td>";
                         }
                         echo "</tr>";
                       }
@@ -250,6 +281,47 @@
   <!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade" id="modal-remove">
+  <div class="modal-dialog">
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Remover Fórmulas</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card-body">
+            <!-- Campo hidden para o ID -->
+
+            <?php
+              $sql = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
+              $exec = mysqli_query($conn, $sql);
+              while($row = mysqli_fetch_array($exec)){
+            ?>
+            <div class="row">
+              <div class="col-6">
+                <input class="form-control" type="text" value="<?=$row["name"]?>" />
+              </div>
+              <div class="col-6">
+                <a href="#" class='btn btn-danger' onclick='confirmDeleteForm(event, "<?=base64_encode(12)?>", "<?=base64_encode($row["id"])?>")'> Remover </a>
+              </div>
+            </div>
+            <?php
+              }
+            ?>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
 <div class="modal fade" id="modal-formula">
   <div class="modal-dialog">
     <form action="?l=<?=base64_encode(11)?>" method="POST" enctype="multipart/form-data">
@@ -267,19 +339,69 @@
 
             <div class="row">
               <div class="col-12">
-                <select name="numerador" name="numerador" > 
-                  <option value> </option>
+                <input class="form-control" type="text" name="nome_coluna" id="nome_coluna" placeholder="Nome da Coluna" value="" />
+              </div>
+            </div>
+            <br />
+
+            <div class="row">
+              <div class="col-12">
+                <input class="form-control" type="text" name="formula" id="formula" placeholder="Fórmula" value="" />
+              </div>
+            </div>
+            <br />
+
+            <div class="row">
+              <div class="col-12">
+                <select name="numerador" id="numerador" class="form-control" onchange="novaFormula(this.value)" >
+                  <option value=""> Numerador </option>
+                  <?php
+                    foreach($colunas as $coluna) {
+                      echo '<option value="'.$coluna.'"> '.$coluna.' </option>';
+
+                    }
+                  ?>
                 </select>
               </div>
             </div>
-            <?php
-              $xColum = 0;
-              foreach($colunas as $coluna) {
-                echo '<div class="form-group row">';
-                echo '<input type="text" class="form-control" name="valor[]" placeholder="'.$coluna.'">';
-                echo '</div>';
-              }
-            ?>
+            <br />
+
+            <div id="denominadores">
+              <div class="row">
+                <div class="col-12">
+                  <select name="operacao" id="operacao" class="form-control" onchange="novaFormula(this.value)" >
+                    <option value=""> Operação </option>
+                    <option value="+"> + </option>
+                    <option value="-"> - </option>
+                    <option value="*"> X </option>
+                    <option value="/"> / </option>
+
+                  </select>
+                </div>
+              </div>
+              <br />
+
+              <div class="row">
+                <div class="col-12">
+                  <select name="denominador" id="denominador" class="form-control" onchange="novaFormula(this.value)" >
+                    <option value=""> Denominador </option>
+                    <?php
+                      foreach($colunas as $coluna) {
+                        echo '<option value="'.$coluna.'"> '.$coluna.' </option>';
+
+                      }
+                    ?>
+                  </select>
+                </div>
+              </div>
+              <br />
+            </div>
+
+            <div id="inputContainer"></div>
+
+            <a href="#" id="novoDenominadorBtn" class="btn btn-block btn-outline-info">Novo Denominador</a>
+
+
           </div>
         </div>
         <div class="modal-footer justify-content-between">
@@ -364,7 +486,7 @@ function groupSalesByField() {
                     <div class="col-3"></div>
                     <div class="col-3">
                       <select id="eixoX" class="form-control">
-                        <option value="Agrupado">`+nomecampo+`</option>
+                        <option value="`+nomecampo+`">`+nomecampo+`</option>
                       </select>
                     </div>
 
@@ -378,9 +500,9 @@ function groupSalesByField() {
     document.getElementById("eixos").innerHTML = eixosHtml;
 
     document.getElementById("result").innerHTML = resultHtml;
-    gerarGrafico("Agrupado", "Total");
+    gerarGrafico(nomecampo, "Total");
 
-    document.getElementById("eixoX").value = "Agrupado";
+    document.getElementById("eixoX").value = nomecampo;
     document.getElementById("eixoY").value = "Total";
 
   }
@@ -546,6 +668,14 @@ function groupSalesByField() {
       }
   }
 
+  function confirmDeleteForm(event, l, i) {
+      event.preventDefault(); // Impede o link de ser seguido imediatamente
+      if (confirm("Os dados da fórmula serão perdidos. Deseja continuar?")) {
+          // Se o usuário confirmar, redireciona para o link
+          window.location.href = "home.php?l=" + l + "&i=" + i;
+      }
+  }
+
   function baixarXls(){
       var wb = XLSX.utils.table_to_book(document.getElementById('planilhaTabela'), {sheet: "Sheet1"});
       XLSX.writeFile(wb, 'tabela.xlsx');
@@ -559,7 +689,28 @@ function groupSalesByField() {
       doc.save('tabela.pdf');
   }
 
+  function novaFormula(campo){
+   var formula = document.getElementById('formula');
+   var antigo = formula.value;
 
+   formula.value = antigo+campo;
+  }
+
+</script>
+
+<script>
+  document.getElementById('novoDenominadorBtn').addEventListener('click', function(e) {
+    e.preventDefault(); // Impede a ação padrão do link
+
+    // Clona a div 'denominadores'
+    var denominadoresClone = document.getElementById('denominadores').cloneNode(true);
+
+    // Remove o atributo id do clone para evitar IDs duplicados no DOM
+    denominadoresClone.removeAttribute('id');
+
+    // Insere o clone dentro da div 'inputContainer'
+    document.getElementById('inputContainer').appendChild(denominadoresClone);
+  });
 </script>
 
 

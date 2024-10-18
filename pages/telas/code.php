@@ -33,7 +33,7 @@
 
     if (preg_match('#^[0-9+\-*/(). ]+$#', $baseFormatada)) {
         // Avaliar a expressão matematicamente
-        $resultado = eval('return ' . $baseFormatada . ';');
+        $resultado = number_format(eval('return ' . $baseFormatada . ';'), 2, '.', '');
     } else {
         $resultado = '###';
     }
@@ -55,6 +55,13 @@
         foreach($colunas as $coluna) {
           echo "<th>" . htmlspecialchars($coluna) . "</th>";
         }
+
+        $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
+        $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+        while($row = mysqli_fetch_array($execFormulas)){
+          echo "<th>" . htmlspecialchars($row["name"]) . "</th>";
+        }
       ?>
     </tr>
     </thead>
@@ -65,6 +72,13 @@
             for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
               $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
               echo "<td>" . $valor . "</td>";
+            }
+
+            $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
+            $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+            while($row = mysqli_fetch_array($execFormulas)){
+              echo "<td>" . calcularFormula($row["formula"], $colunas, $dadosTabela[$linha]) . "</td>";
             }
             echo "</tr>";
           }
@@ -101,6 +115,16 @@
                         echo "<option value='$xColum'>Total de " . htmlspecialchars($coluna) . "</option>";
                         $xColum++;
                       }
+
+                      $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
+                      $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+                      while($row = mysqli_fetch_array($execFormulas)){
+                        echo "<option value='$xColum'> Total de " . htmlspecialchars($row["name"]) . "</option>";
+                        $xColum++;
+                      }
+
+
                     ?>
                   </select>
                 </div>
@@ -114,6 +138,7 @@
                         echo "<option value='$xColum--$coluna'>Agrupar por " . htmlspecialchars($coluna) . "</option>";
                         $xColum++;
                       }
+
                     ?>
                   </select>
                 </div>
@@ -203,6 +228,8 @@
               foreach($colunas as $coluna) {
                 echo "<option value='$coluna'>" . htmlspecialchars($coluna) . "</option>";
               }
+
+
             ?>
 
           </select>
@@ -214,6 +241,13 @@
             <?php
               foreach($colunas as $coluna) {
                 echo "<option value='$coluna'>" . htmlspecialchars($coluna) . "</option>";
+              }
+              $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
+              $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+              while($row = mysqli_fetch_array($execFormulas)){
+                echo "<option value='".$row["name"]."'>" . htmlspecialchars($row["name"]) . "</option>";
+                $xColum++;
               }
             ?>
 
@@ -302,7 +336,7 @@
             ?>
             <div class="row">
               <div class="col-6">
-                <input class="form-control" type="text" value="<?=$row["name"]?>" />
+                <input class="form-control" type="text" readonly value="<?=$row["name"]?>" />
               </div>
               <div class="col-6">
                 <a href="#" class='btn btn-danger' onclick='confirmDeleteForm(event, "<?=base64_encode(12)?>", "<?=base64_encode($row["id"])?>")'> Remover </a>
@@ -339,67 +373,92 @@
 
             <div class="row">
               <div class="col-12">
-                <input class="form-control" type="text" name="nome_coluna" id="nome_coluna" placeholder="Nome da Coluna" value="" />
+                <input class="form-control" type="text" name="nome_coluna" id="nome_coluna" required placeholder="Nome da Coluna" value="" />
               </div>
             </div>
             <br />
 
             <div class="row">
               <div class="col-12">
-                <input class="form-control" type="text" name="formula" id="formula" placeholder="Fórmula" value="" />
+
+                <textarea placeholder="Fórmula" class="form-control" readonly type="text" name="formula" id="formula"></textarea>
+              </div>
+            </div>
+            <br />
+
+            <div class="row">
+              <div class="col-6">
+                <a href="#" onclick="limparFormula()" class="btn btn-block btn-warning"> Limpar </a>
               </div>
             </div>
             <br />
 
             <div class="row">
               <div class="col-12">
-                <select name="numerador" id="numerador" class="form-control" onchange="novaFormula(this.value)" >
-                  <option value=""> Numerador </option>
-                  <?php
-                    foreach($colunas as $coluna) {
-                      echo '<option value="'.$coluna.'"> '.$coluna.' </option>';
+                <?php
+                  /*
+                  $class_row = 0;
+                  foreach($colunas as $coluna) {
+                    if($class_row == 3){
+                      $class_row = 0;
+                      echo '</div>';
+                      echo '<div class="row">';
 
                     }
+
+                    echo '<div class="col-md-4">';
                   ?>
-                </select>
+                  <a href="#" class="btn btn-block btn-secondary" onclick="novaFormula('<?=$coluna?>')" value=""> <?=$coluna?> </a>
+                  <?php
+                    echo '</div>';
+                    $class_row++;
+
+                  }*/
+                ?>
+                <table>
+                  <tr>
+                  <?php
+                    $class_row = 1;
+                    foreach($colunas as $coluna) {
+                      if($class_row == 4){
+                        echo "</tr><tr>";
+                        $class_row = 1;
+                      }
+
+                  ?>
+                  <td><a href="#" class="btn btn-block btn-secondary" onclick="novaFormula('<?=$coluna?>')"> <?=$coluna?> </a></td>
+                  <?php
+                    $class_row++;
+                    }
+                  ?>
+                  </tr>
+
+                  <tr>
+                    <td><a href="#" class="btn btn-block btn-secondary" onclick="novaFormula('+')"> + </a></td>
+                    <td><a href="#" class="btn btn-block btn-secondary" onclick="novaFormula('-')"> - </a></td>
+                    <td><a href="#" class="btn btn-block btn-secondary" onclick="novaFormula('*')"> x </a></td>
+                  </tr>
+                  <tr>
+                    <td><a href="#" class="btn btn-block btn-secondary" onclick="novaFormula('/')"> ÷ </a></td>
+                    <td><a href="#" class="btn btn-block btn-secondary" onclick="novaFormula('(')"> ( </a></td>
+                    <td><a href="#" class="btn btn-block btn-secondary" onclick="novaFormula(')')"> ) </a></td>
+                  </tr>
+                </table>
               </div>
             </div>
             <br />
 
             <div id="denominadores">
               <div class="row">
-                <div class="col-12">
-                  <select name="operacao" id="operacao" class="form-control" onchange="novaFormula(this.value)" >
-                    <option value=""> Operação </option>
-                    <option value="+"> + </option>
-                    <option value="-"> - </option>
-                    <option value="*"> X </option>
-                    <option value="/"> / </option>
-
-                  </select>
+                <div class="col-6">
+                  <input type="number" class="form-control" id="numerico" name="numerico" value="" placeholder="Valor Numérico" />
                 </div>
-              </div>
-              <br />
-
-              <div class="row">
-                <div class="col-12">
-                  <select name="denominador" id="denominador" class="form-control" onchange="novaFormula(this.value)" >
-                    <option value=""> Denominador </option>
-                    <?php
-                      foreach($colunas as $coluna) {
-                        echo '<option value="'.$coluna.'"> '.$coluna.' </option>';
-
-                      }
-                    ?>
-                  </select>
+                <div class="col-6">
+                  <a href="#" onclick="inserirNumerico()" class="btn btn-block btn-outline-info" >Inserir Valor Numérico</a>
                 </div>
               </div>
               <br />
             </div>
-
-            <div id="inputContainer"></div>
-
-            <a href="#" id="novoDenominadorBtn" class="btn btn-block btn-outline-info">Novo Denominador</a>
 
 
           </div>
@@ -434,9 +493,9 @@ function groupSalesByField() {
 
     // Ignorar o cabeçalho (primeira linha) e iterar sobre as linhas de dados
     for (let i = 1; i < rows.length; i++) {
+
       const cells = rows[i].getElementsByTagName("td");
       const groupKey = cells[campo].textContent;  // A chave é o campo pelo qual você quer agrupar
-
       let total = 0;
 
       if (total_reg == "-1") {
@@ -446,6 +505,7 @@ function groupSalesByField() {
         // Caso contrário, somamos o valor escolhido (valor de venda ou quantidade)
         total = parseFloat(cells[total_reg].textContent);
       }
+
 
       // Agrupar por campo selecionado e somar os valores
       if (salesData[groupKey]) {
@@ -694,6 +754,23 @@ function groupSalesByField() {
    var antigo = formula.value;
 
    formula.value = antigo+campo;
+  }
+
+  function inserirNumerico(){
+    let numerico = document.getElementById("numerico").value;
+
+    let neoNumerico = numerico.replace(",", ".");
+
+    var formula = document.getElementById('formula');
+    var antigo = formula.value;
+
+    formula.value = antigo+neoNumerico;
+
+  }
+
+  function limparFormula(){
+    var formula = document.getElementById('formula');
+    formula.value = "";
   }
 
 </script>

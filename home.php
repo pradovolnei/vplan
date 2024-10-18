@@ -25,6 +25,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <?php
     include ("connect.php");
     include ("session.php");
+    include ("functions.php");
     require 'vendor/autoload.php';
 
   ?>

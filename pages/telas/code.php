@@ -72,6 +72,7 @@
             for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
               $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
               echo "<td>" . $valor . "</td>";
+
             }
 
             $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
@@ -192,7 +193,7 @@
                         echo "</td>";
                         for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
                           $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
-                          echo "<td>" . $valor . "</td>";
+                          echo "<td>" . formatarCelula($valor) . "</td>";
                         }
 
                         $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
@@ -529,11 +530,21 @@ function groupSalesByField() {
                        <th>Total</th>
                      </tr></thead>`;
     sortedKeys.forEach(key => {
-      resultHtml += `<tr>
-                       <td>${key}</td>
-                       <td> ${salesData[key].toFixed(2)}</td>
-                     </tr>`;
-    });
+    const value = salesData[key];
+
+    // Verifica se `key` é uma data válida
+    let formattedKey = key;
+    if (!isNaN(Date.parse(key))) {
+      const date = new Date(key);
+      formattedKey = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    }
+
+    resultHtml += `<tr>
+                   <td>${formattedKey}</td>
+                   <td>${Number.isInteger(value) ? value : value.toFixed(2)}</td>
+                 </tr>`;
+});
+
     resultHtml += "</table> </div> </div>";
     resultHtml += "<div class='row' >";
     resultHtml += " <div class='col-4'> <a href='' class='btn btn-warning'> Desagrupar Tabela </a> </div> ";

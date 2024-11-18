@@ -23,6 +23,7 @@
     "issues": "https://github.com/ColorlibHQ/AdminLTE/issues"
   },
   "require": {
-    "phpoffice/phpspreadsheet": "^3.3"
+    "phpoffice/phpspreadsheet": "^3.3",
+    "mercadopago/dx-php": "^3.0"
   }
 }

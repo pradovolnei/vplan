@@ -13,32 +13,28 @@
   $totalColunas = 0;
   $totalLinhas = 0;
   $dadosTabela = [];
+  $listaIds = [];
+  $tiposDados = [];
   $exec_titulo = mysqli_query($conn, $sql_titulo);
   if(mysqli_num_rows($exec_titulo) > 0){
     while($row = mysqli_fetch_array($exec_titulo)){
-      if($row["number_line"] == 0)
+      if($row["number_line"] == 0){
         $colunas[] = htmlspecialchars($row["value"]);
+        $tiposDados[] = $row["type_id"];
+      }
 
-        $dadosTabela[$row["number_line"]][$row["number_column"]] = $row["value"];
-        $totalColunas = $row["number_column"];
-        $totalLinhas = $row["number_line"];
+      $dadosTabela[$row["number_line"]][$row["number_column"]] = $row["value"];
+      $totalColunas = $row["number_column"];
+      $totalLinhas = $row["number_line"];
+
+      if($row["number_column"] == 0)
+        $listaIds[$row["number_line"]] = $row["id"];
+
+      $listaIds[$row["number_line"]] += $row["id"];
     }
+
   }else{
     echo "<script> window.location='home.php' </script>";
-  }
-
-  function calcularFormula($base, $colunas, $alterar){
-
-    $baseFormatada = str_replace($colunas, $alterar, $base);
-
-    if (preg_match('#^[0-9+\-*/(). ]+$#', $baseFormatada)) {
-        // Avaliar a expressão matematicamente
-        $resultado = number_format(eval('return ' . $baseFormatada . ';'), 2, '.', '');
-    } else {
-        $resultado = '###';
-    }
-
-    return $resultado;
   }
 
 ?>
@@ -148,14 +144,17 @@
               </div>
               <?php if($id_nivel == 1){ ?>
               <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
-                <div class="col-4">
+                <div class="col-3">
                   <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert' > Inserir linha </a>
                 </div>
-                <div class="col-4">
-                  <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-formula' > Inserir cálculo </a>
+                <div class="col-3">
+                  <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-formula' > Inserir Fórmula </a>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                   <a href="#" class="btn btn-block btn-outline-danger" data-toggle='modal' data-target='#modal-remove' > Remover Fórmula </a>
+                </div>
+                <div class="col-3">
+                  <a href="#" class="btn btn-block btn-outline-warning" data-toggle='modal' data-target='#modal-lista' > Listas Suspensas </a>
                 </div>
               </div>
               <?php } ?>
@@ -165,6 +164,7 @@
                 <thead>
                   <tr>
                     <th> Linha </th>
+                    <th> ID </th>
                   <?php
                     foreach($colunas as $coluna) {
                       echo "<th>" . htmlspecialchars($coluna) . "</th>";
@@ -174,7 +174,7 @@
                     $execFormulas = mysqli_query($conn, $sqlFormulas);
 
                     while($row = mysqli_fetch_array($execFormulas)){
-                      echo "<th>" . htmlspecialchars($row["name"]) . "</th>";
+                      echo "<th style='background-color: #DDD'>" . htmlspecialchars($row["name"]) . "</th>";
                     }
                   ?>
                 </tr>
@@ -191,16 +191,19 @@
                         }
                         echo " ".$linha;
                         echo "</td>";
+                        echo "<td> ".$id_plan.$listaIds[$linha]." </td>";
                         for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
                           $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
-                          echo "<td>" . formatarCelula($valor) . "</td>";
+
+                          echo "<td>" . formatarCelula($valor, $tiposDados[$coluna]) . "</td>";
+
                         }
 
                         $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=".$id_plan;
                         $execFormulas = mysqli_query($conn, $sqlFormulas);
 
                         while($row = mysqli_fetch_array($execFormulas)){
-                          echo "<td>" . calcularFormula($row["formula"], $colunas, $dadosTabela[$linha]) . "</td>";
+                          echo "<td align='right' style='color: #777; font-weight: bold;'>" . formatarNumero(calcularFormula($row["formula"], $colunas, $dadosTabela[$linha])) . "</td>";
                         }
                         echo "</tr>";
                       }
@@ -296,12 +299,48 @@
             <input type="hidden" class="form-control" name="new_line" value="<?=$totalLinhas+1?>">
 
             <?php
-              $xColum = 0;
+              /*$xColum = 0;
               foreach($colunas as $coluna) {
                 echo '<div class="form-group row">';
                 echo '<input type="text" class="form-control" name="valor[]" placeholder="'.$coluna.'">';
                 echo '</div>';
+              }*/
+
+              $listaTipos = "SELECT dp.value, t.sub_type, number_column, dp.type_id
+                              FROM data_plans dp
+                              LEFT JOIN types t ON t.id = dp.type_id
+                              WHERE dp.number_line = 0
+                              AND dp.plan_id = $id_plan ";
+
+              $execTipos = mysqli_query($conn, $listaTipos);
+
+              while($col = mysqli_fetch_array($execTipos)){
+                $numberColumn = $col["number_column"];
+                if($col["sub_type"] == "select"){
+                  echo '<div class="form-group row">';
+                  echo '<select class="custom-select" name="valor[]" required >';
+                  echo '<option value=""> '.$col["value"].' </option>';
+
+                  $sqlOptions = "SELECT * FROM listas WHERE deleted_at IS NULL AND plan_id = $id_plan AND number_column = $numberColumn ORDER BY value";
+                  $execoptions = mysqli_query($conn, $sqlOptions);
+
+                  while($rowOptions = mysqli_fetch_array($execoptions)){
+                    echo '<option value="'.$rowOptions["value"].'"> '.$rowOptions["value"].' </option>';
+                  }
+
+                  echo '</select>';
+                  //echo "<br><a href='?l=".base64_encode(13)."&i=".base64_encode($id_plan)."&nc=".base64_encode($numberColumn)."&c=".base64_encode($col["value"])."'> Adicionar Opções </a>";
+                  echo '</div>';
+                }else{
+                  echo '<div class="form-group row">';
+                  echo '<input type="'.$col["sub_type"].'" class="form-control" name="valor[]" placeholder="'.$col["value"].'">';
+                  echo '</div>';
+                }
+
+                echo "<input type='hidden' name='tipos[]' value='".$col["type_id"]."' />";
+
               }
+
             ?>
           </div>
         </div>
@@ -312,6 +351,44 @@
       </div>
       <!-- /.modal-content -->
     </form>
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-lista">
+  <div class="modal-dialog">
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Listas Suspensas</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card-body">
+            <!-- Campo hidden para o ID -->
+
+            <?php
+              $sql = "SELECT * FROM data_plans WHERE number_line = 0 AND type_id = 6 AND plan_id=".$id_plan;
+              $exec = mysqli_query($conn, $sql);
+              while($row = mysqli_fetch_array($exec)){
+            ?>
+            <div class="row">
+              <div class="col-6">
+                <a href="?l=<?=base64_encode(13)?>&c=<?=base64_encode($row["value"])?>&i=<?=base64_encode($row["plan_id"])?>&nc=<?=base64_encode($row["number_column"])?>" class='btn btn-warning' > <?=$row["value"]?> </a>
+              </div>
+            </div>
+            <?php
+              }
+            ?>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
   </div>
   <!-- /.modal-dialog -->
 </div>
@@ -455,7 +532,7 @@
                   <input type="number" class="form-control" id="numerico" name="numerico" value="" placeholder="Valor Numérico" />
                 </div>
                 <div class="col-6">
-                  <a href="#" onclick="inserirNumerico()" class="btn btn-block btn-outline-info" >Inserir Valor Numérico</a>
+                  <a href="#" onclick="inserirNumerico()" class="btn btn-block btn-outline-info" id="valor_numerico" >Inserir Valor Numérico</a>
                 </div>
               </div>
               <br />
@@ -466,7 +543,7 @@
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Salvar</button>
+          <button type="submit" id="save_form" class="btn btn-primary">Salvar</button>
         </div>
       </div>
       <!-- /.modal-content -->
@@ -763,8 +840,37 @@ function groupSalesByField() {
   function novaFormula(campo){
    var formula = document.getElementById('formula');
    var antigo = formula.value;
+   var link = document.getElementById("valor_numerico");
 
-   formula.value = antigo+campo;
+   const array = ["+", "-", "*", "/", ")", "("];
+   const array2 = ["+", "-", "*", "/", "("];
+
+   if (!array2.includes(campo)) {
+    link.classList.add("disabled");
+   }else{
+    link.classList.remove("disabled");
+   }
+
+   formula.value = antigo;
+
+   if (!array.includes(campo)) {
+    formula.value += "["+campo+"]";
+
+   }else{
+    formula.value += campo;
+
+   }
+
+   let atualizado = document.getElementById('formula').value;
+   const countAbre = atualizado.split('').filter(letter => letter.toUpperCase() === '(').length;
+   const countFecha = atualizado.split('').filter(letter => letter.toUpperCase() === ')').length;
+
+   if (array2.includes(campo) || countAbre != countFecha || atualizado.includes("](") || atualizado.includes(")[") ) {
+    document.getElementById("save_form").disabled = true;
+   }else{
+    document.querySelector("#save_form").removeAttribute("disabled");
+   }
+
   }
 
   function inserirNumerico(){

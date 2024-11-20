@@ -68,8 +68,19 @@
         </div>
 
         <div class="row mb-2">
-          <div class="col-sm-6">
+          <div class="col-sm-4">
             <input type="text" class="form-control" name="coluna_manual[]" id="coluna_manual[]" placeholder="Nome da Coluna" />
+          </div>
+          <div class="col-sm-4">
+            <select name="tipo_coluna[]" id="tipo_coluna[]" class="form-control" required >
+              <option value=""> Tipo </option>
+              <option value="texto"> Texto </option>
+              <option value="número inteiro"> Número Inteiro </option>
+              <option value="número decial"> Número Decimal </option>
+              <option value="data"> Data </option>
+              <option value="data/hora"> Data/Hora </option>
+              <option value="lista suspensa"> Lista Suspensa </option>
+            </select>
           </div>
         </div>
 
@@ -215,40 +226,75 @@
 
 <script>
   function adicionarColuna() {
-      // Cria um novo div 'row' para agrupar o input e o botão de remover
-      var rowDiv = document.createElement('div');
-      rowDiv.classList.add('row', 'mb-2', 'input-group');
+    // Cria um novo div 'row' para agrupar o input, select e botão de remover
+    var rowDiv = document.createElement('div');
+    rowDiv.classList.add('row', 'mb-2');
 
-      // Cria o div 'col-sm-4' para o input
-      var colDiv = document.createElement('div');
-      colDiv.classList.add('col-sm-6');
+    // Cria o div 'col-sm-4' para o input
+    var colDivInput = document.createElement('div');
+    colDivInput.classList.add('col-sm-4');
 
-      // Cria o input de texto
-      var input = document.createElement('input');
-      input.type = 'text';
-      input.name = 'coluna_manual[]';
-      input.id = 'coluna_manual[]';
-      input.placeholder = 'Nome da Coluna';
-      input.classList.add('form-control');
+    // Cria o input de texto
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'coluna_manual[]';
+    input.id = 'coluna_manual[]';
+    input.placeholder = 'Nome da Coluna';
+    input.classList.add('form-control');
 
-      // Cria o botão de remover
-      var removeBtn = document.createElement('button');
-      removeBtn.textContent = 'Remover';
-      removeBtn.classList.add('btn', 'btn-danger');
+    // Adiciona o input ao div 'col-sm-4'
+    colDivInput.appendChild(input);
 
-      // Adiciona evento para remover o input quando o botão for clicado
-      removeBtn.addEventListener('click', function() {
-          rowDiv.remove();
-      });
+    // Cria o div 'col-sm-4' para o select
+    var colDivSelect = document.createElement('div');
+    colDivSelect.classList.add('col-sm-4');
 
-      // Adiciona o input ao div 'col-sm-4'
-      colDiv.appendChild(input);
+    // Cria a lista suspensa (select)
+    var select = document.createElement('select');
+    select.name = 'tipo_coluna[]';
+    select.id = 'tipo_coluna[]';
+    select.classList.add('form-control');
+    select.required = true;
 
-      // Adiciona o div 'col-sm-4' e o botão de remover ao div 'row'
-      rowDiv.appendChild(colDiv);
-      rowDiv.appendChild(removeBtn);
+    var option = document.createElement('option');
+    option.value = "";
+    option.textContent = "Tipo";
+    select.appendChild(option);
 
-      // Adiciona o div 'row' ao container principal
-      document.getElementById('inputContainer').appendChild(rowDiv);
+    // Adiciona opções ao select
+    var opcoes = ['Texto', 'Número Inteiro', 'Número Decimal', 'Data', 'Data/Hora', 'Lista Suspensa'];
+    opcoes.forEach(function(opcao) {
+        var option = document.createElement('option');
+        option.value = opcao.toLowerCase();
+        option.textContent = opcao;
+        select.appendChild(option);
+    });
+
+    // Adiciona o select ao div 'col-sm-4'
+    colDivSelect.appendChild(select);
+
+    var colDivRemove = document.createElement('div');
+    colDivRemove.classList.add('col-sm-4');
+
+    // Cria o botão de remover
+    var removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remover';
+    removeBtn.classList.add('btn', 'btn-danger');
+
+    // Adiciona evento para remover a linha quando o botão for clicado
+    removeBtn.addEventListener('click', function() {
+        rowDiv.remove();
+    });
+
+    colDivRemove.appendChild(removeBtn);
+
+    // Adiciona os elementos criados ao div 'row'
+    rowDiv.appendChild(colDivInput);
+    rowDiv.appendChild(colDivSelect);
+    rowDiv.appendChild(colDivRemove);
+
+    // Adiciona o div 'row' ao container principal
+    document.getElementById('inputContainer').appendChild(rowDiv);
   }
+
 </script>

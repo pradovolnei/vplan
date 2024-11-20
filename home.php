@@ -20,6 +20,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
 </head>
 <body class="hold-transition sidebar-collapse layout-top-nav">
   <?php
@@ -105,6 +106,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $page[10] = "pages/telas/tabela_manual.php";
       $page[11] = "pages/telas/nova_formula.php";
       $page[12] = "pages/telas/remove_formula.php";
+      $page[13] = "pages/telas/exibe_listas.php";
+      $page[14] = "pages/telas/salva_listas.php";
 
       include $page[$link];
     ?>

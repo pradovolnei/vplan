@@ -38,7 +38,11 @@
   }
 
 ?>
-
+<style>
+  .btn-custom {
+    width: 100%; /* Faz o botão ocupar toda a largura do container */
+  }
+</style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -143,26 +147,31 @@
 
               </div>
               <?php if($id_nivel == 1){ ?>
-              <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
-                <div class="col-3">
-                  <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert' > Inserir linha </a>
+                <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                  <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-insert'>Inserir linha</a>
+                  </div>
+                  <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-formula'>Inserir Fórmula</a>
+                  </div>
+                  <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    <a href="#" class="btn btn-block btn-outline-danger" data-toggle='modal' data-target='#modal-remove'>Remover Fórmula</a>
+                  </div>
+                  <div class="col-12 col-md-3 mb-2 mb-md-0">
+                    <a href="#" class="btn btn-block btn-outline-warning" data-toggle='modal' data-target='#modal-lista'>Listas Suspensas</a>
+                  </div>
                 </div>
-                <div class="col-3">
-                  <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal' data-target='#modal-formula' > Inserir Fórmula </a>
-                </div>
-                <div class="col-3">
-                  <a href="#" class="btn btn-block btn-outline-danger" data-toggle='modal' data-target='#modal-remove' > Remover Fórmula </a>
-                </div>
-                <div class="col-3">
-                  <a href="#" class="btn btn-block btn-outline-warning" data-toggle='modal' data-target='#modal-lista' > Listas Suspensas </a>
-                </div>
-              </div>
               <?php } ?>
 
             <div id="result" class="card-body table-responsive p-0">
               <table id="planilhaTabela" class="table table-bordered">
                 <thead>
                   <tr>
+                    <?php
+                      if($id_nivel == 1)
+                        echo "<th> Ação </th>";
+                    ?>
+
                     <th> Linha </th>
                     <th> ID </th>
                   <?php
@@ -183,13 +192,18 @@
                     <?php
                       for($linha = 1; $linha <= $totalLinhas; $linha++) {
                         echo "<tr>";
-                        echo "<td> ";
+
                         if($id_nivel == 1){
+                          echo "<td>";
+                          echo "<a onclick='preencherLinha($id_plan, $linha)' style='color: #0A0' title='Editar' class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit-line'  ><i class='nav-icon fas fa-pen'></i> </a>";
                         ?>
-                          <a href='#' style="font-size: 0.7rem; color: #F00" onclick='confirmDeleteLine(event, "<?=base64_encode(9)?>", "<?=base64_encode($id_plan)?>", <?=$linha?>)'> <i class='nav-icon fas fa-trash'></i> </a>
+                          <a href='#'  title='Excluir' style=" color: #F00" onclick='confirmDeleteLine(event, "<?=base64_encode(9)?>", "<?=base64_encode($id_plan)?>", <?=$linha?>)'> <i class='nav-icon fas fa-trash'></i> </a>
                         <?php
+
+                          echo "</td>";
                         }
-                        echo " ".$linha;
+                        echo "<td> ";
+                        echo $linha;
                         echo "</td>";
                         echo "<td> ".$id_plan.$listaIds[$linha]." </td>";
                         for($coluna = 0; $coluna <= $totalColunas; $coluna++) {
@@ -280,6 +294,36 @@
   </div>
 </section>
 
+<!-- Modal -->
+<div class="modal fade" id="modal-edit-line">
+  <div class="modal-dialog">
+    <form action="?l=<?=base64_encode(15)?>" method="POST" enctype="multipart/form-data">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Editar Linha</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="card-body">
+            <!-- Campo hidden para o ID -->
+            <input type="hidden" class="form-control" name="id" value="<?=$id_plan?>" />
+            <input type="hidden" class="form-control" name="line" id="line" value="" />
+            <div id="resultsEdit"></div>
+
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </form>
+  </div>
+  <!-- /.modal-dialog -->
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="modal-insert">
@@ -374,11 +418,15 @@
               $exec = mysqli_query($conn, $sql);
               while($row = mysqli_fetch_array($exec)){
             ?>
-            <div class="row">
+            <div class="row mb-2"> <!-- Adiciona margem abaixo de cada linha -->
               <div class="col-6">
-                <a href="?l=<?=base64_encode(13)?>&c=<?=base64_encode($row["value"])?>&i=<?=base64_encode($row["plan_id"])?>&nc=<?=base64_encode($row["number_column"])?>" class='btn btn-warning' > <?=$row["value"]?> </a>
+                <a href="?l=<?=base64_encode(13)?>&c=<?=base64_encode($row["value"])?>&i=<?=base64_encode($row["plan_id"])?>&nc=<?=base64_encode($row["number_column"])?>"
+                  class='btn btn-warning btn-block'> <!-- btn-block faz o botão ocupar toda a largura da coluna -->
+                  <?=$row["value"]?>
+                </a>
               </div>
             </div>
+
             <?php
               }
             ?>
@@ -907,5 +955,18 @@ function groupSalesByField() {
   });
 </script>
 
+<script>
+  async function preencherLinha(planilha, linha){
+    var numLine = document.getElementById("line");
+    numLine.value = linha;
+
+    const response = await fetch('campos_linha.php?p='+planilha+'&l='+linha);
+    if (!response.ok) {
+        throw new Error('Erro ao acessar o arquivo PHP');
+    }
+    const texto = await response.text();
+    document.getElementById('resultsEdit').innerHTML = texto;
+  }
+</script>
 
 

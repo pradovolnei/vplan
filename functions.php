@@ -1,6 +1,9 @@
 <?php
-  function formatarCelula($valor, $tipo){
+  function formatarCelula($valor = null, $tipo){
     $valorFormat = $valor;
+
+    if($valor == "")
+		  return $valorFormat;
 
     if($tipo == 2){
       $valorFormat = number_format($valor, 0, ',', '.');

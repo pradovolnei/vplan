@@ -67,4 +67,43 @@
         return number_format($numero, 0, ',', '.');
     }
   }
+
+  function getNivel($idNivel){
+    if($idNivel == 1)
+      $nivel = "Moderador";
+
+    if($idNivel == 2)
+      $nivel = "Consulta";
+
+    return $nivel;
+  }
+
+  function getStatus($idStatus){
+    if($idStatus == 1)
+      $nivel = "Ativo";
+
+    if($idStatus == 2)
+      $nivel = "Bloqueado";
+
+    if($idStatus == 3)
+      $nivel = "Expirado";
+
+    return $nivel;
+  }
+
+  function getExp($data){
+    $data_atual = new DateTime(date("Y-m-d"));
+
+    $data_expira = new DateTime($data);
+
+    $diferenca = $data_atual->diff($data_expira);
+
+    if ($diferenca->invert) {
+      $mensagem = "<font color='red'> Expirou a ".$diferenca->days." dias </font> ";
+    } else {
+      $mensagem = "<font  color='blue'> Expira em ".$diferenca->days." dias </font> ";
+    }
+
+    return $mensagem;
+  }
 ?>

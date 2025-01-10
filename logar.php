@@ -16,6 +16,9 @@
     $_SESSION["group_id"] = $row["group_id"];
     $_SESSION["email"] = $row["email"];
     $_SESSION["type"] = $row["type"];
+    $_SESSION["cpf"] = $row["cpf"];
+    $_SESSION["expiration"] = $row["expiration"];
+    $_SESSION["status"] = $row["status"];
 
     echo "<script> window.location='home.php'; </script>";
 

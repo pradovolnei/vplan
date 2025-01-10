@@ -56,7 +56,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <li class="nav-item dropdown">
             <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Perfil</a>
             <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-              <li><a href="#" class="dropdown-item">Exibir </a></li>
+              <li><a href="?l=<?=base64_encode(16)?>" class="dropdown-item">Exibir </a></li>
               <li><a href="logout.php" class="dropdown-item">Logout</a></li>
 
               <!-- End Level two -->
@@ -109,6 +109,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $page[13] = "pages/telas/exibe_listas.php";
       $page[14] = "pages/telas/salva_listas.php";
       $page[15] = "pages/telas/edita_linha.php";
+      $page[16] = "pages/telas/perfil.php";
 
       include $page[$link];
     ?>

@@ -31,8 +31,10 @@
 
   function calcularFormula($base, $colunas, $alterar) {
 		try {
-			// Substitui as colunas pelos valores desejados
-			$baseFormatada = str_replace($colunas, $alterar, $base);
+			// Substitui as colunas pelos valores desejados 
+      $baseFormatada = str_replace("[", "", $base);
+      $baseFormatada = str_replace("]", "", $baseFormatada);
+			$baseFormatada = str_replace($colunas, $alterar, $baseFormatada);
 
 			// Valida se a string contém apenas caracteres permitidos
 			if (!preg_match('#^[0-9+\-*/(). ]+$#', $baseFormatada)) {

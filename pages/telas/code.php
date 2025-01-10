@@ -521,26 +521,7 @@
 
             <div class="row">
               <div class="col-12">
-                <?php
-                  /*
-                  $class_row = 0;
-                  foreach($colunas as $coluna) {
-                    if($class_row == 3){
-                      $class_row = 0;
-                      echo '</div>';
-                      echo '<div class="row">';
 
-                    }
-
-                    echo '<div class="col-md-4">';
-                  ?>
-                  <a href="#" class="btn btn-block btn-secondary" onclick="novaFormula('<?=$coluna?>')" value=""> <?=$coluna?> </a>
-                  <?php
-                    echo '</div>';
-                    $class_row++;
-
-                  }*/
-                ?>
                 <table>
                   <tr>
                   <?php
@@ -728,10 +709,6 @@ function groupSalesByField() {
     //var tipoGrafico = 'bar';
 
     var eixoY = [eixoY2];
-		//var eixoYSelect = document.getElementById('eixoY');
-		//var eixoY = Array.from(eixoYSelect.selectedOptions).map(option => option.value); // Pegando todos os campos selecionados no eixo Y
-    //console.log(eixoY2);
-    //console.log(eixoY);
 		// Limitar a seleção de campos Y no gráfico de pizza
 		if (tipoGrafico === 'pie' && eixoY.length > 1) {
 			alert('O gráfico de pizza só pode exibir um campo no eixo Y.');
@@ -772,7 +749,9 @@ function groupSalesByField() {
 			// Gerar dados para o gráfico de pizza
 			var dados = [];
 			for (var i = 1; i < tabela.rows.length; i++) {
-				dados.push(parseFloat(tabela.rows[i].cells[yIndices[0]].innerText));
+        var valorBruto = tabela.rows[i].cells[yIndices[0]].innerText;
+        var valorNormalizado = valorBruto.replace(/\./g, '').replace(',', '.'); // Remove pontos e ajusta a vírgula para ponto
+        dados.push(parseFloat(valorNormalizado));
 			}
 
 			datasets.push({

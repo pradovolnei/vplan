@@ -4,10 +4,16 @@
   $email = $_POST["email"];
   $password = encripta($_POST["password"]);
 
-  $sql = "SELECT * FROM users WHERE email='$email' AND password='$password' AND status=1";
+  $sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
   $exec = mysqli_query($conn, $sql);
   if(mysqli_num_rows($exec) >0){
     $row = mysqli_fetch_array($exec);
+
+    if($row["status"] == 2)
+      echo "<script> alert('Usuário Bloqueado! Entre em contato com o seu superior!'); window.location='login.php'; </script>";
+
+    if($row["status"] == 3)
+      echo "<script> alert('Plano expirado!'); window.location='login.php'; </script>";
 
     session_start();
 

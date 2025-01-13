@@ -110,6 +110,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $page[14] = "pages/telas/salva_listas.php";
       $page[15] = "pages/telas/edita_linha.php";
       $page[16] = "pages/telas/perfil.php";
+      $page[17] = "pages/telas/save_perfil.php";
+      $page[18] = "pages/telas/altera_status.php";
 
       include $page[$link];
     ?>

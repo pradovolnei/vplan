@@ -13,17 +13,17 @@
                             </div>
                             <!-- /.card-header -->
                             <!-- form start -->
-                            <form>
+                            <form action="?l=<?=base64_encode(17)?>" method="POST" >
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Nome</label>
-                                            <input type="text" class="form-control" id="exampleInputEmail1" required placeholder="Nome" value="<?=$_SESSION["name"]?>">
+                                            <input type="text" class="form-control" id="exampleInputEmail1" name="nome" required placeholder="Nome" value="<?=$_SESSION["name"]?>">
                                             </div>
                                             <div class="form-group">
                                             <label for="exampleInputPassword1">CPF</label>
-                                            <input type="text" class="form-control" id="exampleInputPassword1" required placeholder="CPF" value="<?=$_SESSION["cpf"]?>">
+                                            <input type="text" class="form-control" id="exampleInputPassword1" name="cpf" required placeholder="CPF" value="<?=$_SESSION["cpf"]?>">
                                         </div>
                                     </div>
 
@@ -51,7 +51,7 @@
 
                     </div>
                 </div>
-
+                <?php if($_SESSION["type"] == 1){ ?>
                 <div class="row">
                     <!-- left column -->
                     <div class="col-md-12">
@@ -83,7 +83,7 @@
 
                                 
                             </div>
-
+                            
                             <div class="card-body">
                                 <div class="row"  >
                                     <div class="col-md-6">
@@ -91,29 +91,44 @@
                                     </div>
                                 </div>
 
+                                <?php 
+                                    $group_id = $_SESSION["group_id"];
+                                    $sqlUsers = "SELECT * FROM users WHERE group_id = $group_id AND id <> ".$_SESSION["id"];
+                                    $execUsers = mysqli_query($conn, $sqlUsers);
+
+                                    while($row = mysqli_fetch_array($execUsers)){
+                                        if($row["status"] == 1){
+                                            $color = "danger";
+                                            $title = "Bloquear";
+                                            $novoStatus = 2;
+                                        }else{
+                                            $color = "success";
+                                            $title = "Desbloquear";
+                                            $novoStatus = 1;
+                                        }
+                                ?>
                                 <div class="row" style="margin-top: 16px;" >
                                     <div class="col-md-3">
-                                        <label> Usuários </label>
+                                        <label> <?=$row["name"]?> </label>
                                     </div>
 
                                     <div class="col-md-3">
-                                        <a class="btn btn-primary" href=""> Bloquear </a>
+
+                                        <a href="?l=<?=base64_encode(18)?>&s=<?=base64_encode($novoStatus)?>&i=<?=base64_encode($row["id"])?>" class="btn btn-<?=$color?>" href=""> <?=$title?> </a>
                                     </div>
                                 </div>
-                                
+                                <?php } ?>
                             </div>
+                            
                             <!-- /.card-body -->
 
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Salvar</button>
-                            </div>
                             </form>
                         </div>
                         <!-- /.card -->
 
-
                     </div>
                 </div>
+                <?php } ?>
             <!-- /.row -->
             </div><!-- /.container-fluid -->
         </section>

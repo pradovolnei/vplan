@@ -31,7 +31,7 @@
 
   function calcularFormula($base, $colunas, $alterar) {
 		try {
-			// Substitui as colunas pelos valores desejados 
+			// Substitui as colunas pelos valores desejados
       $baseFormatada = str_replace("[", "", $base);
       $baseFormatada = str_replace("]", "", $baseFormatada);
 			$baseFormatada = str_replace($colunas, $alterar, $baseFormatada);
@@ -105,5 +105,19 @@
     }
 
     return $mensagem;
+  }
+
+  function statusPay($status){
+
+    if($status == 1)
+      return "Pendente";
+
+    if($status == 2)
+      return "<font color='#0B0'>Pago</font>";
+
+    if($status == 3)
+      return "<font color='#F00'>Cancelado</font>";
+
+
   }
 ?>

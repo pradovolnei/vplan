@@ -4,7 +4,7 @@
   $email = $_POST["email"];
   $password = encripta($_POST["password"]);
 
-  $sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
+  $sql = "SELECT u.*, g.expiration FROM users u LEFT JOIN groups g ON g.id = u.group_id WHERE u.email='$email' AND password='$password'";
   $exec = mysqli_query($conn, $sql);
   if(mysqli_num_rows($exec) >0){
     $row = mysqli_fetch_array($exec);
@@ -25,6 +25,23 @@
     $_SESSION["cpf"] = $row["cpf"];
     $_SESSION["expiration"] = $row["expiration"];
     $_SESSION["status"] = $row["status"];
+
+
+
+    $data_atual = new DateTime(date("Y-m-d"));
+
+    $data_expira = new DateTime($row["expiration"]);
+
+    $diferenca = $data_atual->diff($data_expira);
+
+    if ($diferenca->invert) {
+      if($row["type"] == 1){
+        echo "<script> window.location='home.php?l=".base64_encode(16)."'; </script>";
+      }else {
+        echo "<script> alert('Conta expirada! Entre em contato com sua gerência.'); window.location='logout.php'; </script>";
+      }
+
+    }
 
     echo "<script> window.location='home.php'; </script>";
 

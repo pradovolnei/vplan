@@ -20,6 +20,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <link rel="stylesheet" href="plugins/jsgrid/jsgrid.min.css">
+  <link rel="stylesheet" href="plugins/jsgrid/jsgrid-theme.min.css">
 
 </head>
 <body class="hold-transition sidebar-collapse layout-top-nav">
@@ -54,9 +56,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <a href="#" class="nav-link">Contato</a>
           </li>
           <li class="nav-item dropdown">
-            <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Perfil</a>
+            <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Configurações</a>
             <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
-              <li><a href="?l=<?=base64_encode(16)?>" class="dropdown-item">Exibir </a></li>
+              <li><a href="?l=<?=base64_encode(16)?>" class="dropdown-item">Dados de usuários </a></li>
+              <li><a href="?l=<?=base64_encode(21)?>" class="dropdown-item">Histórico de pagamnetos </a></li>
               <li><a href="logout.php" class="dropdown-item">Logout</a></li>
 
               <!-- End Level two -->
@@ -88,10 +91,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- /.content-header -->
 
     <?php
+
       if(isset($_GET["l"]))
         $link = base64_decode($_GET["l"]);
       else
         $link = 0;
+
+      if($link != 16 && $link != 19 && $link != 20){
+        $data_atual = new DateTime(date("Y-m-d"));
+
+        $data_expira = new DateTime($_SESSION["expiration"]);
+
+        $diferenca = $data_atual->diff($data_expira);
+
+        if ($diferenca->invert) {
+          if($_SESSION["type"] == 1){
+            echo "<script> window.location='home.php?l=".base64_encode(16)."'; </script>";
+          }else {
+            echo "<script> alert('Conta expirada! Entre em contato com sua gerência.'); window.location='logout.php'; </script>";
+          }
+
+        }
+      }
 
       $page[0] = "pages/telas/resum.php";
       $page[1] = "pages/telas/plan.php";
@@ -112,6 +133,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $page[16] = "pages/telas/perfil.php";
       $page[17] = "pages/telas/save_perfil.php";
       $page[18] = "pages/telas/altera_status.php";
+      $page[19] = "pages/telas/pix.php";
+      $page[20] = "pages/telas/pix_confirm.php";
+      $page[21] = "pages/telas/pay_list.php";
 
       include $page[$link];
     ?>
@@ -166,6 +190,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+<script src="plugins/jsgrid/jsgrid.min.js"></script>
 
 <script>
   $(function () {

@@ -46,15 +46,6 @@ if (mysqli_num_rows($exec_titulo) > 0) {
 </style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
-
-<!-- DataTables JS -->
-<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
 
 <div style="display: none;">
 
@@ -99,111 +90,160 @@ if (mysqli_num_rows($exec_titulo) > 0) {
 </div>
 <?php include "pages/telas/modals_details.php"; ?>
 <section class="content" style="margin-top: 20px;">
+
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
+        <!-- Default box -->
         <div class="card collapsed-card shadow-lg">
           <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title">Dados da Tabela</h3>
-            <button type="button" class="btn btn-tool text-white" data-card-widget="collapse" title="Expandir">
-              <i class="fas fa-plus"></i>
-            </button>
+
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
           </div>
           <div class="card-body" style="display: none;">
-            <div class="row mb-3">
-              <div class="col-md-6">
+            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+              <div class="col-6">
                 <select id="total_reg" name="total_reg" onChange="groupSalesByField()" class="form-control">
-                  <option value="">Total de</option>
-                  <option value="-1">Total de Linhas</option>
-                  <?php foreach ($colunas as $coluna) {
+                  <option value=""> Total de </option>
+                  <option value="-1"> Total de Linhas </option>
+                  <?php
+                  $xColum = 0;
+                  foreach ($colunas as $coluna) {
                     echo "<option value='$xColum'>Total de " . htmlspecialchars($coluna) . "</option>";
                     $xColum++;
-                  } ?>
+                  }
+
+                  $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=" . $id_plan;
+                  $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+                  while ($row = mysqli_fetch_array($execFormulas)) {
+                    echo "<option value='$xColum'> Total de " . htmlspecialchars($row["name"]) . "</option>";
+                    $xColum++;
+                  }
+
+
+                  ?>
                 </select>
               </div>
-              <div class="col-md-6">
+
+              <div class="col-6">
                 <select id="group_by" name="group_by" onChange="groupSalesByField()" class="form-control">
-                  <option value="">Agrupar por</option>
-                  <?php foreach ($colunas as $coluna) {
+                  <option value=""> Agrupar por </option>
+                  <?php
+                  $xColum = 0;
+                  foreach ($colunas as $coluna) {
                     echo "<option value='$xColum--$coluna'>Agrupar por " . htmlspecialchars($coluna) . "</option>";
                     $xColum++;
-                  } ?>
+                  }
+
+                  ?>
                 </select>
               </div>
-            </div>
 
+
+            </div>
             <?php if ($id_nivel == 1) { ?>
-              <div class="row mb-3 text-center">
-                <div class="col-md-3 mb-2">
-                  <a href="#" class="btn btn-outline-info w-100" data-toggle='modal' data-target='#modal-insert'>Inserir
-                    linha</a>
+              <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                <div class="col-12 col-md-3 mb-2 mb-md-0">
+                  <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal'
+                    data-target='#modal-insert'>Inserir linha</a>
                 </div>
-                <div class="col-md-3 mb-2">
-                  <a href="#" class="btn btn-outline-info w-100" data-toggle='modal' data-target='#modal-formula'>Inserir
-                    Fórmula</a>
+                <div class="col-12 col-md-3 mb-2 mb-md-0">
+                  <a href="#" class="btn btn-block btn-outline-info" data-toggle='modal'
+                    data-target='#modal-formula'>Inserir Fórmula</a>
                 </div>
-                <div class="col-md-3 mb-2">
-                  <a href="#" class="btn btn-outline-danger w-100" data-toggle='modal' data-target='#modal-remove'>Remover
-                    Fórmula</a>
+                <div class="col-12 col-md-3 mb-2 mb-md-0">
+                  <a href="#" class="btn btn-block btn-outline-danger" data-toggle='modal'
+                    data-target='#modal-remove'>Remover Fórmula</a>
                 </div>
-                <div class="col-md-3 mb-2">
-                  <a href="#" class="btn btn-outline-warning w-100" data-toggle='modal' data-target='#modal-lista'>Listas
-                    Suspensas</a>
+                <div class="col-12 col-md-3 mb-2 mb-md-0">
+                  <a href="#" class="btn btn-block btn-outline-warning" data-toggle='modal'
+                    data-target='#modal-lista'>Listas Suspensas</a>
                 </div>
               </div>
             <?php } ?>
 
-            <div class="table-responsive">
+            <div id="result" class="card-body table-responsive p-0">
               <table id="planilhaTabela" class="table table-bordered table-hover text-center">
-                <thead class="thead-dark">
+                <thead class="thead-light">
                   <tr>
-                    <?php if ($id_nivel == 1)
-                      echo "<th>Ação</th>"; ?>
-                    <th>Linha</th>
-                    <th>ID</th>
-                    <?php foreach ($colunas as $coluna) {
+                    <?php
+                    if ($id_nivel == 1)
+                      echo "<th> Ação </th>";
+                    ?>
+
+                    <th> Linha </th>
+                    <th> ID </th>
+                    <?php
+                    foreach ($colunas as $coluna) {
                       echo "<th>" . htmlspecialchars($coluna) . "</th>";
-                    } ?>
+                    }
+
+                    $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=" . $id_plan;
+                    $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+                    while ($row = mysqli_fetch_array($execFormulas)) {
+                      echo "<th style='background-color: #DDD'>" . htmlspecialchars($row["name"]) . "</th>";
+                    }
+                    ?>
                   </tr>
                 </thead>
                 <tbody>
-                  <?php for ($linha = 1; $linha <= $totalLinhas; $linha++) { ?>
-                    <tr>
-                      <?php if ($id_nivel == 1) { ?>
-                        <td>
-                          <a href="#" class='open-modal-edit' data-toggle='modal' data-target='#modal-edit-line'  onclick='preencherLinha(<?= $id_plan ?>, <?= $linha ?>)' title='Editar'>
-                            <i class='fas fa-pen'></i>
-                          </a>
-                          <a href='#' class='text-danger' title='Excluir'
-                            onclick='confirmDeleteLine(event, "<?= base64_encode(9) ?>", "<?= base64_encode($id_plan) ?>", <?= $linha ?>)'>
-                            <i class='fas fa-trash'></i>
-                          </a>
-                        </td>
-                      <?php } ?>
-                      <td><?= $linha ?></td>
-                      <td><?= $id_plan . $listaIds[$linha] ?></td>
-                      <?php for ($coluna = 0; $coluna <= $totalColunas; $coluna++) { ?>
-                        <td>
-                          <?= isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '' ?>
-                        </td>
-                      <?php } ?>
-                    </tr>
-                  <?php } ?>
+                  <?php
+                  for ($linha = 1; $linha <= $totalLinhas; $linha++) {
+                    echo "<tr>";
+
+                    if ($id_nivel == 1) {
+                      echo "<td>";
+                      echo "<a onclick='preencherLinha($id_plan, $linha)' style='color: #0A0' title='Editar' class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit-line'  ><i class='nav-icon fas fa-pen'></i> </a>";
+                      ?>
+                      <a href='#' title='Excluir' style=" color: #F00"
+                        onclick='confirmDeleteLine(event, "<?= base64_encode(9) ?>", "<?= base64_encode($id_plan) ?>", <?= $linha ?>)'>
+                        <i class='nav-icon fas fa-trash'></i> </a>
+                      <?php
+
+                      echo "</td>";
+                    }
+                    echo "<td> ";
+                    echo $linha;
+                    echo "</td>";
+                    echo "<td> " . $id_plan . $listaIds[$linha] . " </td>";
+                    for ($coluna = 0; $coluna <= $totalColunas; $coluna++) {
+                      $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
+
+                      echo "<td>" . formatarCelula($valor, $tiposDados[$coluna]) . "</td>";
+
+                    }
+
+                    $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=" . $id_plan;
+                    $execFormulas = mysqli_query($conn, $sqlFormulas);
+
+                    while ($row = mysqli_fetch_array($execFormulas)) {
+                      echo "<td align='right' style='color: #777; font-weight: bold;'>" . formatarNumero(calcularFormula($row["formula"], $colunas, $dadosTabela[$linha])) . "</td>";
+                    }
+                    echo "</tr>";
+                  }
+                  ?>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
+        <!-- /.card -->
       </div>
     </div>
   </div>
 </section>
-
 <section class="content" style="margin-top: 20px;">
   <div class="container-fluid">
     <div class="row justify-content-center">
       <div class="col-md-8">
-        <h2 class="text-center mb-4">Gráficos</h2>
+        <h2 class="text-center mb-4">Gráfico de Produtos</h2>
         <div id="eixos" class="mb-4">
           <div class="row">
             <div class="col-md-6">
@@ -248,8 +288,10 @@ if (mysqli_num_rows($exec_titulo) > 0) {
                 <option value="line">Linha</option>
                 <option value="pie">Pizza</option>
               </select>
+              <div style="width: 60%;">
+                <canvas id="graficoCanvas" class="mt-4"></canvas>
+              </div>
 
-              <canvas id="graficoCanvas" class="mt-4" style="width: 100%; height: 400px;"></canvas>
             </div>
           </div>
         </div>
@@ -428,7 +470,8 @@ if (mysqli_num_rows($exec_titulo) > 0) {
         var dados = [];
         for (var i = 1; i < tabela.rows.length; i++) {
           var valorBruto = tabela.rows[i].cells[yIndices[0]].innerText;
-          dados.push(parseFloat(valorBruto));
+          var valorNormalizado = valorBruto.replace(/\./g, '').replace(',', '.'); // Remove pontos e ajusta a vírgula para ponto
+          dados.push(parseFloat(valorNormalizado));
         }
 
         datasets.push({
@@ -454,10 +497,14 @@ if (mysqli_num_rows($exec_titulo) > 0) {
         });
       } else {
         // Criar datasets dinâmicos para cada campo do eixo Y (gráficos de barra e linha)
+
         yIndices.forEach((yIndex, idx) => {
           var dados = [];
           for (var i = 1; i < tabela.rows.length; i++) {
-            dados.push(parseFloat(tabela.rows[i].cells[yIndex].innerText));
+            var valorNormalizado2 = tabela.rows[i].cells[yIndex].innerText;
+            var valorNormalizado1 = valorNormalizado2.replace(/\./g, '').replace(',', '.'); // Remove pontos e ajusta a vírgula para ponto
+
+            dados.push(parseFloat(valorNormalizado1));
           }
 
           // Adicionar dataset
@@ -601,7 +648,7 @@ if (mysqli_num_rows($exec_titulo) > 0) {
     e.preventDefault(); // Impede a ação padrão do link
 
     // Clona a div 'denominadores'
-    var denominadoresClonae = document.getElementById('denominadores').cloneNode(true);
+    var denominadoresClone = document.getElementById('denominadores').cloneNode(true);
 
     // Remove o atributo id do clone para evitar IDs duplicados no DOM
     denominadoresClone.removeAttribute('id');
@@ -623,15 +670,4 @@ if (mysqli_num_rows($exec_titulo) > 0) {
     const texto = await response.text();
     document.getElementById('resultsEdit').innerHTML = texto;
   }
-</script>
-
-<script>
-  $(document).ready(function() {
-    $('#planilhaTabela').DataTable({
-      "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json" // Tradução para português (opcional)
-      },
-      "order": [[1, "desc"]] // Ordenação inicial pela segunda coluna (criada em) em ordem decrescente
-    });
-  });
 </script>

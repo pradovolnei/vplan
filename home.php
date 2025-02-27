@@ -23,6 +23,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="plugins/jsgrid/jsgrid.min.css">
   <link rel="stylesheet" href="plugins/jsgrid/jsgrid-theme.min.css">
 
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+
 </head>
 <body class="hold-transition sidebar-collapse layout-top-nav">
   <?php
@@ -133,9 +135,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $page[16] = "pages/telas/perfil.php";
       $page[17] = "pages/telas/save_perfil.php";
       $page[18] = "pages/telas/altera_status.php";
-      $page[19] = "pages/telas/pix.php";
+      $page[19] = "pages/telas/pay_method.php";
       $page[20] = "pages/telas/pix_confirm.php";
       $page[21] = "pages/telas/pay_list.php";
+      $page[22] = "pages/telas/pay_cred.php";
+      $page[23] = "pages/telas/details_pay.php";
 
       include $page[$link];
     ?>

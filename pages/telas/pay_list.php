@@ -40,7 +40,7 @@ $exec = mysqli_query($conn, $sql);
                             .then(response => response.text())
                             .then(data => {
                               document.getElementById("conteudo").innerHTML = "";
-                              if (data === "Pagamento Confirmado") {
+                              if (data === "Pagamento Confirmado" || data === "Pix Cancelado") {
                                 window.location.href = 'home.php?l=<?= base64_encode(21) ?>';
                               }
                             })

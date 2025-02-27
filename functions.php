@@ -120,4 +120,15 @@
 
 
   }
+
+  function parcelas($valor){
+    if($valor <= 40)
+      return 1;
+    elseif($valor > 40 && $valor <= 200)
+      return 5;
+    elseif($valor > 200 && $valor <= 300)
+      return 8;
+    else
+      return 10;
+  }
 ?>

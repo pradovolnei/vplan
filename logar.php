@@ -10,7 +10,7 @@
     $row = mysqli_fetch_array($exec);
 
     if($row["status"] == 2)
-      echo "<script> alert('Usuário Bloqueado! Entre em contato com o seu superior!'); window.location='login.php'; </script>";
+      echo "<script> alert('Usuário Bloqueado! Entre em contato com a sua gerência!'); window.location='login.php'; </script>";
 
     if($row["status"] == 3)
       echo "<script> alert('Plano expirado!'); window.location='login.php'; </script>";
@@ -38,7 +38,7 @@
       if($row["type"] == 1){
         echo "<script> window.location='home.php?l=".base64_encode(16)."'; </script>";
       }else {
-        echo "<script> alert('Conta expirada! Entre em contato com sua gerência.'); window.location='logout.php'; </script>";
+        echo "<script> alert('Conta expirada! Entre em contato com a sua gerência.'); window.location='logout.php'; </script>";
       }
 
     }

@@ -1,6 +1,5 @@
 <?php
-  $valor = $_POST["dias"]*1.2;
-  $valor = round($valor, 2);
+
   $email = $_SESSION["email"];
   $user_id = $_SESSION["id"];
   $nome = explode(" ", $_SESSION["name"]);
@@ -64,7 +63,7 @@
   $sqlCanc = "UPDATE transactions SET `status`=3 WHERE user_id=$user_id AND `status`=1";
   mysqli_query($conn, $sqlCanc);
 
-  $sql = "INSERT INTO transactions VALUES(NULL, $valor, $user_id, '$qr_code_base64', '$qr_code', '$ticket_url', 'pix', NOW(), 1)";
+  $sql = "INSERT INTO transactions VALUES(NULL, $valor, $valor, 1, NULL, $user_id, '$qr_code_base64', '$qr_code', '$ticket_url', 'Pix', NOW(), 1, NULL, NULL)";
   mysqli_query($conn, $sql);
   $id_solicita = mysqli_insert_id($conn);
 

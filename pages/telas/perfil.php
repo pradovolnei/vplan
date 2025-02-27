@@ -1,3 +1,19 @@
+<style>
+  .btn-outline-success, .btn-outline-primary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 120px;
+  }
+  .btn-outline-success input:checked + img, .btn-outline-primary input:checked + img {
+    filter: brightness(0.9) !important;
+  }
+  .gap-4 {
+    gap: 1.5rem;
+  }
+</style>
 <?php
   $user_id = $_SESSION["id"];
 ?>
@@ -151,58 +167,59 @@
   <div class="modal-dialog">
     <form action="?l=<?=base64_encode(19)?>" method="POST" enctype="multipart/form-data">
       <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Adicionar Período / Retivar</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <div class="modal-header bg-primary text-white">
+          <h4 class="modal-title">Adicionar Período / Reativar</h4>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <div class="card-body">
-            <input type="hidden" class="form-control" name="id" value="<?=$user_id?>" />
-            <input type="hidden" class="form-control" name="group" value="<?=$_SESSION["group_id"]?>" />
+          <div class="container">
+            <input type="hidden" name="id" value="<?=$user_id?>" />
+            <input type="hidden" name="group" value="<?=$_SESSION["group_id"]?>" />
 
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="exampleInputEmail1">Perídodo desejável (Dias) </label>
-                  <input type="number" name="dias" id="dias" class="form-control" min="5" required />
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="form-group">
-                  <div id="custo" class="font-weight-bold" style="font-size: 1.2rem; line-height: 5.2;">
-                    Valor estimado R$ 0,00
-                  </div>
-                </div>
-              </div>
-
+            <div class="form-group">
+              <label for="dias" class="font-weight-bold">Período desejável (Dias)</label>
+              <input type="number" name="dias" id="dias" class="form-control" min="5" required />
             </div>
 
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label for="" style="color: #FF8C00;"> * 1 Dia = R$ 1,20 </label>
-                </div>
-                <div class="form-group">
-                  <label for="" style="color: #D00;"> * O valor mínimo de uma renovação é de R$ 6,00 </label>
-                </div>
-              </div>
+            <div class="form-group text-center font-weight-bold" id="custo" style="font-size: 1.3rem;">
+              Valor estimado R$ 0,00
             </div>
 
+            <div class="alert alert-warning text-center">
+              <strong>1 Dia = R$ 1,20</strong>
+            </div>
+            <div class="alert alert-danger text-center">
+              <strong>O valor mínimo de uma renovação é de R$ 6,00</strong>
+            </div>
+
+            <div class="form-group text-center">
+              <label class="font-weight-bold">Escolha a forma de pagamento:</label>
+              <div class="d-flex justify-content-center gap-4">
+                <label class="btn btn-outline-success p-3 mx-2">
+                  <input type="radio" name="pagamento" value="pix" class="d-none" required>
+                  <img src="dist/img/pix.png" style="filter: brightness(2.0);" alt="Pix" width="40">
+                  <br>Pix
+                </label>
+                <label class="btn btn-outline-primary p-3 mx-2">
+                  <input type="radio" name="pagamento" value="cartao" class="d-none" required>
+                  <img src="dist/img/cred.png" alt="Cartão de Crédito" width="40">
+                  <br>Cartão de Crédito
+                </label>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
           <button type="submit" class="btn btn-primary" disabled id="pagamento">Pagar</button>
         </div>
       </div>
-      <!-- /.modal-content -->
     </form>
   </div>
-  <!-- /.modal-dialog -->
 </div>
+
 <?php
   $sqlV = "SELECT * FROM transactions WHERE user_id=$user_id AND `status` = 1";
   $execV = mysqli_query($conn, $sqlV);

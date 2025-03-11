@@ -102,7 +102,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <br>
-                                                        <a href="#" class="btn btn-warning" data-toggle='modal' data-target='#modal-saldo'> Renovar / Retivar </a>
+                                                        <a href="#" class="btn btn-warning" data-toggle='modal' data-target='#modal-saldo'> Renovar / Reativar </a>
                                                     </div>
                                                 </div>
                                             </div>

@@ -143,7 +143,7 @@
       securityCode: document.getElementById("securityCode").value.replace(/\s/g, ''),
       cardholderName: document.getElementById("cardHolderName").value.trim(),
       identificationType: "CPF", // Pode mudar dependendo do país
-      identificationNumber: "12345678909" // Deve ser um CPF válido
+      identificationNumber: document.getElementById("cpf").value.replace(/\s/g, '') // Deve ser um CPF válido
     };
 
     mp.createCardToken(cardData).then(function(response) {

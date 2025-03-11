@@ -32,7 +32,6 @@ if (mysqli_num_rows($exec_titulo) > 0) {
 
     $listaIds[$row["number_line"]] += $row["id"];
   }
-
 } else {
   echo "<script> window.location='home.php' </script>";
 }
@@ -73,7 +72,6 @@ if (mysqli_num_rows($exec_titulo) > 0) {
         for ($coluna = 0; $coluna <= $totalColunas; $coluna++) {
           $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
           echo "<td>" . $valor . "</td>";
-
         }
 
         $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=" . $id_plan;
@@ -195,41 +193,53 @@ if (mysqli_num_rows($exec_titulo) > 0) {
                 </thead>
                 <tbody>
                   <?php
+                  $totais = array_fill(0, $totalColunas + 1, 0);
+                  $colunaNumerica = array_fill(0, $totalColunas + 1, false);
+
                   for ($linha = 1; $linha <= $totalLinhas; $linha++) {
                     echo "<tr>";
 
                     if ($id_nivel == 1) {
                       echo "<td>";
-                      echo "<a onclick='preencherLinha($id_plan, $linha)' style='color: #0A0' title='Editar' class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit-line'  ><i class='nav-icon fas fa-pen'></i> </a>";
-                      ?>
-                      <a href='#' title='Excluir' style=" color: #F00"
-                        onclick='confirmDeleteLine(event, "<?= base64_encode(9) ?>", "<?= base64_encode($id_plan) ?>", <?= $linha ?>)'>
-                        <i class='nav-icon fas fa-trash'></i> </a>
-                      <?php
-
+                      echo "<a onclick='preencherLinha($id_plan, $linha)' style='color: #0A0' title='Editar' class='open-modal-edit' href='#' data-toggle='modal' data-target='#modal-edit-line'><i class='nav-icon fas fa-pen'></i> </a>";
+                      echo "<a href='#' title='Excluir' style='color: #F00' onclick='confirmDeleteLine(event, \"" . base64_encode(9) . "\", \"" . base64_encode($id_plan) . "\", $linha)'><i class='nav-icon fas fa-trash'></i></a>";
                       echo "</td>";
                     }
-                    echo "<td> ";
-                    echo $linha;
-                    echo "</td>";
+
+                    echo "<td> $linha </td>";
                     echo "<td> " . $id_plan . $listaIds[$linha] . " </td>";
+
                     for ($coluna = 0; $coluna <= $totalColunas; $coluna++) {
                       $valor = isset($dadosTabela[$linha][$coluna]) ? htmlspecialchars($dadosTabela[$linha][$coluna]) : '';
 
-                      echo "<td>" . formatarCelula($valor, $tiposDados[$coluna]) . "</td>";
+                      if (is_numeric($valor)) {
+                        $totais[$coluna] += $valor;
+                        $colunaNumerica[$coluna] = true;
+                      }
 
+                      echo "<td>" . formatarCelula($valor, $tiposDados[$coluna]) . "</td>";
                     }
 
                     $sqlFormulas = "SELECT * FROM formulas WHERE plan_id=" . $id_plan;
                     $execFormulas = mysqli_query($conn, $sqlFormulas);
-
                     while ($row = mysqli_fetch_array($execFormulas)) {
                       echo "<td align='right' style='color: #777; font-weight: bold;'>" . formatarNumero(calcularFormula($row["formula"], $colunas, $dadosTabela[$linha])) . "</td>";
                     }
+
                     echo "</tr>";
                   }
                   ?>
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3"><strong>Total</strong></td>
+                    <?php
+                    for ($coluna = 0; $coluna <= $totalColunas; $coluna++) {
+                      echo "<td><strong>" . ($colunaNumerica[$coluna] ? formatarNumero($totais[$coluna]) : "") . "</strong></td>";
+                    }
+                    ?>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           </div>
@@ -322,7 +332,7 @@ if (mysqli_num_rows($exec_titulo) > 0) {
       for (let i = 1; i < rows.length; i++) {
 
         const cells = rows[i].getElementsByTagName("td");
-        const groupKey = cells[campo].textContent;  // A chave é o campo pelo qual você quer agrupar
+        const groupKey = cells[campo].textContent; // A chave é o campo pelo qual você quer agrupar
         let total = 0;
 
         if (total_reg == "-1") {
@@ -343,7 +353,7 @@ if (mysqli_num_rows($exec_titulo) > 0) {
       }
 
       // Ordenar as chaves (produtos ou datas)
-      const sortedKeys = Object.keys(salesData).sort();  // Ordenação alfabética por chave
+      const sortedKeys = Object.keys(salesData).sort(); // Ordenação alfabética por chave
 
       // Exibir o resultado em uma tabela
       let resultHtml = `<h3>Agrupado</h3>`;
@@ -352,7 +362,7 @@ if (mysqli_num_rows($exec_titulo) > 0) {
                   <div class="col-12">
                   <table id="planilhaTabela" class="table table-bordered">
                      <thead><tr>
-                       <th>`+ nomecampo + `</th>
+                       <th>` + nomecampo + `</th>
                        <th>Total</th>
                      </tr></thead>`;
       sortedKeys.forEach(key => {
@@ -383,7 +393,7 @@ if (mysqli_num_rows($exec_titulo) > 0) {
                     <div class="col-3"></div>
                     <div class="col-3">
                       <select id="eixoX" class="form-control">
-                        <option value="`+ nomecampo + `">` + nomecampo + `</option>
+                        <option value="` + nomecampo + `">` + nomecampo + `</option>
                       </select>
                     </div>
 
@@ -404,7 +414,6 @@ if (mysqli_num_rows($exec_titulo) > 0) {
 
     }
   }
-
 </script>
 
 <!-- Script para manipular a geração dos gráficos -->
@@ -555,7 +564,6 @@ if (mysqli_num_rows($exec_titulo) > 0) {
 
   // Gerar gráfico inicialmente
   gerarGrafico();
-
 </script>
 
 <script>
@@ -576,15 +584,21 @@ if (mysqli_num_rows($exec_titulo) > 0) {
   }
 
   function baixarXls() {
-    var wb = XLSX.utils.table_to_book(document.getElementById('planilhaTabela'), { sheet: "Sheet1" });
+    var wb = XLSX.utils.table_to_book(document.getElementById('planilhaTabela'), {
+      sheet: "Sheet1"
+    });
     XLSX.writeFile(wb, 'tabela.xlsx');
   }
 
   function baixarPdf() {
-    var { jsPDF } = window.jspdf;
+    var {
+      jsPDF
+    } = window.jspdf;
     var doc = new jsPDF();
 
-    doc.autoTable({ html: '#planilhaTabela' });
+    doc.autoTable({
+      html: '#planilhaTabela'
+    });
     doc.save('tabela.pdf');
   }
 
@@ -632,7 +646,10 @@ if (mysqli_num_rows($exec_titulo) > 0) {
     var formula = document.getElementById('formula');
     var antigo = formula.value;
 
-    formula.value = antigo + neoNumerico;
+    formula.value = antigo + '[' + neoNumerico + ']';
+    document.querySelector("#save_form").removeAttribute("disabled");
+    let linpar = document.getElementById("numerico");
+    linpar.value = "";
 
   }
 
@@ -640,11 +657,10 @@ if (mysqli_num_rows($exec_titulo) > 0) {
     var formula = document.getElementById('formula');
     formula.value = "";
   }
-
 </script>
 
 <script>
-  document.getElementById('novoDenominadorBtn').addEventListener('click', function (e) {
+  document.getElementById('novoDenominadorBtn').addEventListener('click', function(e) {
     e.preventDefault(); // Impede a ação padrão do link
 
     // Clona a div 'denominadores'

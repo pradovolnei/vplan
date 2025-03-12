@@ -140,6 +140,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $page[21] = "pages/telas/pay_list.php";
       $page[22] = "pages/telas/pay_cred.php";
       $page[23] = "pages/telas/details_pay.php";
+      $page[24] = "pages/telas/save_assis.php";
 
       include $page[$link];
     ?>

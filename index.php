@@ -67,6 +67,9 @@
           <li class="nav-item">
             <a class="nav-link" href="#fale-conosco">Fale Conosco</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="login.php">Entrar</a>
+          </li>
         </ul>
       </div>
     </div>

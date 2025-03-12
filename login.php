@@ -56,11 +56,6 @@
           </div>
           <!-- /.col -->
         </div>
-        <div class="row" style="margin-top: 10px;">
-          <div class="col-12">
-            <a href="signup.php" class="btn btn-success btn-block"> Cadastrar Novo Usuário </a>
-          </div>
-        </div>
       </form>
     </div>
     <!-- /.login-card-body -->

@@ -5,13 +5,17 @@ include("session.php");
 $id_pay = $_GET["id_pay"];
 $group_id = $_SESSION["group_id"];
 
+$sqlGroups = "SELECT * FROM users WHERE group_id=$group_id";
+$execGroups = mysqli_query($conn, $sql);
+$total_g = mysqli_num_rows($execGroups) - 1;
+
 $sql = "SELECT * FROM transactions WHERE id=$id_pay";
 $exec = mysqli_query($conn, $sql);
 $row = mysqli_fetch_array($exec);
 
 $ticket_url = $row["ticket_url"];
 $price = $row["price"];
-$days = round($price / 1.2);
+$days = round($price / (1.2+($total_g*0.4)));
 
 $url = file_get_contents($ticket_url);
 

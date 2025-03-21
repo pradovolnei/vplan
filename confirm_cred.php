@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     include("functions.php");
     session_start(); // Certifique-se de iniciar a sessão
     $token = $_POST['token']; // O token do cartão gerado pelo front-end
-    $access_token = "TEST-2231983626109454-100916-9b3f0b3430745b1fb823bd06adf5c218-268837322";
+    $access_token = "APP_USR-3159248105241363-022110-66589ec1596ff28a91b3e2b1c6c88ae0-2280185227";
     $cpf = str_replace([".", "-"], "", $_POST["cpf"]);
     $bandeira = $_POST["bandeira"];
     $valor = floatval(36);
@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = [
       "transaction_amount" => $valor,
       "token" => $token,
-      "description" => "Cadastro na Plataforma V-Plan",
+      "description" => "Cadastro na Plataforma V-Sheet",
       "installments" => $parcelas,
       "payment_method_id" => $bandeira,
       "payer" => [

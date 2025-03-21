@@ -142,7 +142,7 @@ function parcelas($valor)
 
 function sendWelcomeEmail($to, $name)
 {
-  $subject = "Bem-vindo ao V-Plan, $name!";
+  $subject = "Bem-vindo ao V-Sheet, $name!";
 
   $headers = "MIME-Version: 1.0" . "\r\n";
   $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
@@ -151,7 +151,7 @@ function sendWelcomeEmail($to, $name)
   $message = "
     <html>
     <head>
-        <title>Bem-vindo ao V-Plan</title>
+        <title>Bem-vindo ao V-Sheet</title>
         <style>
             body { font-family: Arial, sans-serif; }
             .container { width: 80%; margin: 0 auto; padding: 20px; border: 1px solid #ddd; }
@@ -168,9 +168,9 @@ function sendWelcomeEmail($to, $name)
             <p>Obrigado por se cadastrar em nossa plataforma! Estamos felizes em tê-lo conosco.</p>
             <p>Se precisar de ajuda, entre em contato com nossa equipe de suporte.</p>
             <p>Atenciosamente,</p>
-            <p><strong>V-Plan</strong></p>
+            <p><strong>V-Sheet</strong></p>
             <div class='footer'>
-                <p>&copy; " . date('Y') . " V-Plan. Todos os direitos reservados.</p> <br>
+                <p>&copy; " . date('Y') . " V-Sheet. Todos os direitos reservados.</p> <br>
                 <p> VOLNEI LUIZ CAMPOS PRADO 40.905.140/0001-23 </p>
             </div>
         </div>

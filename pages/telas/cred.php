@@ -130,7 +130,7 @@
 </div>
 
 <script>
-  const mp = new MercadoPago("TEST-09e09a42-40b3-490d-bdbe-e7df1444c890");
+  const mp = new MercadoPago("APP_USR-e4859647-cd2a-49b9-b8c5-922b3d312936");
 
   document.getElementById("paymentForm").addEventListener("submit", function(event) {
     event.preventDefault(); // Impede o envio imediato do formulário

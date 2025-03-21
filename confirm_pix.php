@@ -25,11 +25,11 @@ $user_id = mysqli_insert_id($conn);
 $curl = curl_init();
 
 $json_data = json_encode(array(
-  "transaction_amount" => 1,
+  "transaction_amount" => 36,
   "payment_method_id" => "pix",
   "external_reference" => "1234",
   "notification_url" => "https://vactions.com.br/",
-  "description" => "Cadastro na Plataforma V-Plan",
+  "description" => "Cadastro na Plataforma V-Sheet",
   "payer" => array(
     "first_name" => $first_name,
     "last_name" => $last_name,
@@ -92,7 +92,7 @@ $price = 36;
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V-Plan</title>
+  <title>V-Sheet</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {

@@ -4,89 +4,177 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V-Plan</title>
+  <title>V-Sheet</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    /* Estilos personalizados */
     body {
-      scroll-behavior: smooth;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+
+    .navbar {
+      background-color: #007bff;
+      /* Azul vibrante */
+    }
+
+    .navbar-light .navbar-nav .nav-link {
+      color: white;
+    }
+
+    .navbar-light .navbar-nav .nav-link:hover {
+      color: #ddd;
     }
 
     section {
-      padding: 60px 0;
+      padding: 80px 0;
     }
 
-    nav .nav-link.active {
-      font-weight: bold;
+    #home {
+      background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+      /* Gradiente suave */
+      text-align: center;
+    }
+
+    #sobre-sistema,
+    #planos,
+    #sobre-nos,
+    #fale-conosco {
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      border: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
     }
 
     footer {
-      padding: 20px 0;
-      background-color: #f8f9fa;
+      background-color: #343a40;
+      color: white;
       text-align: center;
+      padding: 20px 0;
+    }
+
+    footer a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    p {
+      line-height: 1.9;
+      /* Aumenta o espaçamento em 60% do tamanho da fonte */
+    }
+
+    h2 {
+      line-height: 1.9;
+      /* Aumenta o espaçamento em 60% do tamanho da fonte */
+    }
+
+    .modal-dialog {
+      max-width: 80%;
+      /* Ajuste a largura conforme necessário */
+    }
+
+    .modal-content {
+      max-height: 80vh;
+      /* Define um limite de altura baseado na viewport */
+    }
+
+    .modal-body {
+      max-height: 60vh;
+      /* Limita a altura do corpo da modal */
+      overflow-y: auto;
+      /* Ativa a rolagem vertical caso o conteúdo ultrapasse o limite */
     }
   </style>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
 
-  <!-- DataTables -->
-  <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-  <link rel="stylesheet" href="plugins/jsgrid/jsgrid.min.css">
-  <link rel="stylesheet" href="plugins/jsgrid/jsgrid-theme.min.css">
 </head>
 
 <body>
 
   <!-- Menu de navegação -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
     <div class="container">
-      <a class="navbar-brand" href="#"><i>V-Plan</i></a>
+      <a class="navbar-brand" style="font-family: fantasy; color: #FFF;" href="#"><i>V-Sheet</i></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link active" href="#home">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#sobre-sistema">Sobre o Sistema</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#planos">Planos</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#sobre-nos">Sobre Nós</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#fale-conosco">Fale Conosco</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="login.php">Entrar</a>
-          </li>
+          <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#usuarios-ativos">Usuários</a></li>
+          <li class="nav-item"><a class="nav-link" href="#sobre-sistema">Sobre o Sistema</a></li>
+          <li class="nav-item"><a class="nav-link" href="#planos">Planos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#funcionalidades">Funcionalidades</a></li>
+          <li class="nav-item"><a class="nav-link" href="#sobre-nos">Sobre Nós</a></li>
+          <li class="nav-item"><a class="nav-link" href="#fale-conosco">Fale Conosco</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.php">Entrar</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Home -->
-  <section id="home" class="bg-light">
+  <section id="home">
     <div class="container">
-      <!-- Conteúdo da home -->
+      <h1>Bem-vindo ao V-Sheet</h1>
+      <p>Soluções completas para criação e análise de dados.</p>
+      <a href="#planos" class="btn btn-primary btn-lg">Veja nossos planos</a>
     </div>
   </section>
+
+  <!-- Prova Social -->
+  <section id="usuarios-ativos" style="background-color: #e9f5ff; padding: 60px 0;">
+    <div class="container text-center">
+      <h2>Usuários Ativos no V-Sheet</h2>
+      <p>Veja quantas pessoas estão utilizando nosso sistema agora mesmo!</p>
+      <?php
+      $usuariosAtivos = 121;
+      ?>
+      <h1 style="font-size: 4rem; color: #007bff;"><?php echo number_format($usuariosAtivos); ?></h1>
+      <p>Usuários ativos</p>
+    </div>
+  </section>
+
 
   <!-- Sobre o Sistema -->
   <section id="sobre-sistema">
     <div class="container">
       <h2 class="text-center">Sobre o Sistema</h2>
-      <p class="text-center">Nosso sistema oferece uma solução completa para gerenciamento de negócios, com foco em automatização e otimização de processos, proporcionando maior eficiência e resultados para sua empresa.</p>
+      <p class="text-center">
+        O <b>V-Sheet</b> é uma plataforma inovadora que facilita a criação e gestão de dados sem exigir conhecimento técnico em planilhas como Excel. Com uma interface intuitiva e recursos inteligentes, qualquer pessoa pode organizar informações, criar cálculos, visualizar estatísticas e gerar relatórios de forma prática e eficiente.
+      </p>
+
+      <h2 class="text-center">O Que Fazemos</h2>
+
+      <p> Nosso sistema permite que usuários de qualquer nível de experiência manipulem dados com facilidade. Você pode: </p>
+
+      <p> ✅ Criar fórmulas personalizadas sem precisar conhecer funções complexas. </p>
+      <p> ✅ Agrupar totais automaticamente, simplificando análises. </p>
+      <p> ✅ Gerar gráficos dinâmicos para visualizar suas informações de forma clara. </p>
+      <p> ✅ Compartilhar e colaborar em tempo real. </p>
+      <p> ✅ Automatizar cálculos e relatórios, economizando tempo. </p>
+
+      <h2 class="text-center">Vantagens do V-Sheet</h2>
+
+      <p> 💡 Simplicidade: Desenvolvido para que qualquer pessoa possa gerenciar dados sem complicação. </p>
+      <p> 🚀 Agilidade: Configuração rápida e intuitiva, sem necessidade de treinamentos. </p>
+      <p> 📊 Visualização Inteligente: Gráficos e tabelas dinâmicas para facilitar a interpretação dos dados. </p>
+      <p> 🔗 Acessível de Qualquer Lugar: Sistema online, sem necessidade de instalação. </p>
+      <p> 🔒 Segurança e Confiabilidade: Seus dados protegidos com tecnologia moderna. </p>
+      <p class="text-center" style="margin-top: 40px;"> Se você precisa de uma solução fácil e eficiente para organizar informações, tomar decisões com base em dados <br> e automatizar processos, o V-Sheet é a escolha certa para você! </p>
     </div>
   </section>
 
@@ -135,12 +223,90 @@
     </div>
   </section>
 
+  <!-- Funcionalidades com Imagens -->
+  <section id="funcionalidades" style="padding: 60px 0;">
+    <div class="container">
+      <h2 class="text-center">Funcionalidades do V-Sheet</h2>
+      <p class="text-center">Descubra como o V-Sheet pode tornar a gestão de dados mais simples e eficiente.</p>
+
+      <div class="row">
+        <!-- Funcionalidade 1 -->
+        <div class="col-md-6">
+          <a href="#"><img src="dist/img/criar-tabelas.png" class="img-fluid rounded" alt="Criação fácil de tabelas"></a>
+        </div>
+        <div class="col-md-6">
+          <h4>Criação Simples de Tabelas e Fórmulas</h4>
+          <p>Com o V-Sheet, você pode criar tabelas e aplicar fórmulas complexas sem precisar conhecer Excel. Nossa interface intuitiva facilita a criação de contas e automação de cálculos.</p>
+        </div>
+      </div>
+
+      <div class="row mt-5">
+        <!-- Funcionalidade 2 -->
+        <div class="col-md-6 order-md-2">
+          <img src="dist/img/agrupar-dados.png" class="img-fluid rounded clickable-image" alt="Agrupamento de dados">
+        </div>
+        <div class="col-md-6 order-md-1">
+          <h4>Agrupamento de Dados</h4>
+          <p>Organize e agrupe seus dados de forma simples. Visualize totais, médias e outras estatísticas em poucos cliques.</p>
+        </div>
+      </div>
+
+      <div class="row mt-5">
+        <!-- Funcionalidade 3 -->
+        <div class="col-md-6">
+          <img src="dist/img/gerar-graficos.png" class="img-fluid rounded clickable-image" alt="Gráficos automáticos">
+        </div>
+        <div class="col-md-6">
+          <h4>Gráficos Automáticos</h4>
+          <p>Transforme seus dados em gráficos dinâmicos com apenas um clique. Visualize informações complexas de forma clara e rápida.</p>
+        </div>
+      </div>
+
+      <div class="row mt-5">
+        <!-- Funcionalidade 4 -->
+        <div class="col-md-6 order-md-2">
+          <img src="dist/img/upload-xls.png" class="img-fluid rounded clickable-image" alt="Upload de planilhas XLS">
+        </div>
+        <div class="col-md-6 order-md-1">
+          <h4>Importação de Planilhas XLS</h4>
+          <p>Possui dados em Excel? Sem problemas! Importe suas planilhas diretamente para o V-Sheet e comece a gerenciar seus dados em minutos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal de Imagem -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageModalLabel">Visualização da Imagem</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="modalImage" class="img-fluid" alt="Imagem ampliada">
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Sobre Nós -->
   <section id="sobre-nos">
     <div class="container">
       <h2 class="text-center">Sobre Nós</h2>
-      <p class="text-center">Somos uma equipe dedicada ao desenvolvimento de soluções inovadoras para empresas de todos os portes, sempre focados em entregar a melhor experiência para nossos clientes.</p>
+
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <img src="dist/img/eu.jpg" alt="Sua Foto" class="img-fluid rounded-circle">
+        </div>
+        <div class="col-md-8">
+          <p>
+            Volnei Prado, programador experiente e apaixonado por games, tecnologia e animes. A ideia de criar o V-Sheet surgiu da minha surpresa com a grande quantidade de clientes que precisavam de relatórios de dados, mas não sabiam utilizar nem as fórmulas básicas do Excel. Percebi a oportunidade de facilitar a vida dessas pessoas e me dediquei a este desafio. Acredito que a análise de dados pode ser acessível a todos, e é isso que me motiva a trabalhar no V-Sheet.
+          </p>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -219,11 +385,92 @@
     </div>
   </div>
 
-  <!-- Rodapé -->
-  <footer style="background-color: #EEE">
-    <p>VOLNEI LUIZ CAMPOS PRADO 40.905.140/0001-23</p>
-    <a href="#">Política de Privacidade</a> | <a href="#">Termos de Uso</a>
+  <!-- Modal Política de Privacidade -->
+  <div class="modal fade" id="modalPrivacy" tabindex="-1" aria-labelledby="modalPrivacyLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalPrivacyLabel">Política de Privacidade</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Última atualização: [Data]</p>
+          <h3>1. Introdução</h3>
+          <p>O V-Sheet valoriza sua privacidade e está comprometido em proteger seus dados. Esta Política explica como coletamos, usamos e armazenamos suas informações.</p>
+
+          <h3>2. Dados Coletados</h3>
+          <p>Podemos coletar informações pessoais como nome, e-mail e dados de uso para melhorar sua experiência no sistema.</p>
+
+          <h3>3. Uso das Informações</h3>
+          <p>Os dados são utilizados para fornecer nossos serviços, personalizar sua experiência e garantir a segurança do sistema.</p>
+
+          <h3>4. Compartilhamento de Informações</h3>
+          <p>Não compartilhamos seus dados com terceiros, exceto quando necessário para cumprir obrigações legais.</p>
+
+          <h3>5. Segurança</h3>
+          <p>Adotamos medidas técnicas para proteger suas informações contra acesso não autorizado.</p>
+
+          <h3>6. Seus Direitos</h3>
+          <p>Você pode solicitar a alteração ou remoção dos seus dados a qualquer momento.</p>
+
+          <h3>7. Alterações</h3>
+          <p>Esta política pode ser atualizada periodicamente. Notificaremos caso haja mudanças significativas.</p>
+
+          <h3>8. Contato</h3>
+          <p>Para dúvidas, entre em contato pelo e-mail [seu e-mail].</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Termos de Uso -->
+  <div class="modal fade" id="modalTerms" tabindex="-1" aria-labelledby="modalTermsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTermsLabel">Termos de Uso</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Última atualização: [Data]</p>
+
+          <h3>1. Aceitação dos Termos</h3>
+          <p>Ao utilizar o V-Sheet, você concorda com estes Termos. Caso não concorde, não utilize o sistema.</p>
+
+          <h3>2. Uso do Sistema</h3>
+          <p>O V-Sheet deve ser utilizado apenas para fins legais. É proibido usar o sistema para atividades fraudulentas ou ilícitas.</p>
+
+          <h3>3. Cadastro</h3>
+          <p>Para acessar alguns recursos, pode ser necessário criar uma conta, fornecendo informações verdadeiras e atualizadas.</p>
+
+          <h3>4. Propriedade Intelectual</h3>
+          <p>O V-Sheet e seu conteúdo são protegidos por direitos autorais. Você não pode copiar, modificar ou distribuir sem autorização.</p>
+
+          <h3>5. Responsabilidades</h3>
+          <p>Não nos responsabilizamos por danos causados pelo uso indevido do sistema.</p>
+
+          <h3>6. Alterações</h3>
+          <p>Podemos modificar estes Termos a qualquer momento. O uso contínuo do sistema após alterações implica aceitação dos novos termos.</p>
+
+          <h3>7. Contato</h3>
+          <p>Para dúvidas, entre em contato pelo e-mail [seu e-mail].</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="background-color: #EEE; text-align: center; padding: 15px;">
+    <p style="color: #000; font-weight: bold;">VOLNEI LUIZ CAMPOS PRADO 40.905.140/0001-23</p>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#modalPrivacy">Política de Privacidade</a> |
+    <a href="#" data-bs-toggle="modal" data-bs-target="#modalTerms">Termos de Uso</a>
   </footer>
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -239,6 +486,20 @@
       var assunto = document.getElementById("assunto");
       assunto.value = "Orçamento";
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('.clickable-image');
+      const modalImage = document.getElementById('modalImage');
+      const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+
+      images.forEach(image => {
+        image.addEventListener('click', function() {
+          modalImage.src = this.src;
+          modalImage.alt = this.alt;
+          imageModal.show();
+        });
+      });
+    });
   </script>
 
   <!-- jQuery -->

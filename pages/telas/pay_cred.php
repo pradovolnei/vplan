@@ -1,7 +1,7 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $token = $_POST['token']; // O token do cartão gerado pelo front-end
-    $access_token = "TEST-2231983626109454-100916-9b3f0b3430745b1fb823bd06adf5c218-268837322";
+    $access_token = "APP_USR-3159248105241363-022110-66589ec1596ff28a91b3e2b1c6c88ae0-2280185227";
     $cpf = $_POST["cpf"];
     $bandeira = $_POST["bandeira"];
     $cpf = str_replace(".", "", $cpf);
@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $data = [
         "transaction_amount" => $valor, // Valor da compra
         "token" => $token, // Token do cartão vindo do front-end
-        "description" => "Renovação de período V-Plan",
+        "description" => "Renovação de período V-Sheet",
         "installments" => $parcelas, // Número de parcelas
         "payment_method_id" => "$bandeira", // Método de pagamento (ex: visa, mastercard, etc.)
         "payer" => [
@@ -30,12 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ]
         ]
     ];
-
-    // Exibir os dados enviados para depuração
-    /*echo "<h3>Dados enviados para o Mercado Pago:</h3>";
-    echo "<pre>";
-    print_r($data);
-    echo "</pre>";*/
 
     // Inicializar cURL para enviar requisição para API do Mercado Pago
     $ch = curl_init("https://api.mercadopago.com/v1/payments");
@@ -55,15 +49,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Decodificar resposta JSON
     $result = json_decode($response, true);
 
-    // Exibir a resposta completa para depuração
-    /*echo "<h3>Resposta da API do Mercado Pago:</h3>";
-    echo "<pre>";
-    print_r($result);
-    echo "</pre>";*/
-
     // Verificar status da resposta
     if ($http_code == 200 || $http_code == 201) {
-        echo "<h3 style='color: green;'>Pagamento aprovado! ID da transação: " . $result["id"] . "</h3>";
+        //echo "<h3 style='color: green;'>Pagamento aprovado! ID da transação: " . $result["id"] . "</h3>";
+        //print_r($result);
         $id_pay = $result["id"];
         $nsu = $result["additional_info"]["nsu_processadora"];
         $total = $result["transaction_details"]["total_paid_amount"];
@@ -78,7 +67,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $rowG = mysqli_fetch_array($execG);
         $expiration = new DateTime($rowG["expiration"]);
         $data_atual = new DateTime(date("Y-m-d"));
-        $days = round($valor / 1.2);
+
+        $sqlGroups = "SELECT * FROM users WHERE group_id=$group_id";
+        $execGroups = mysqli_query($conn, $sqlGroups);
+        $total_g_2 = mysqli_num_rows($execGroups);
+        $total_g = $total_g_2 - 1;
+
+        $days = round($valor / (1.2 + ($total_g*0.4)));
 
         if ($expiration > $data_atual) {
           $nova_data = " expiration + INTERVAL $days DAY";

@@ -21,6 +21,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <?php
 $user_id = $_SESSION["id"];
+$id_group = $_SESSION["group_id"];
 ?>
 <div class="content-header">
   <div class="container">
@@ -109,7 +110,7 @@ $user_id = $_SESSION["id"];
                         <a class="btn btn-primary" href="#" data-toggle='modal' data-target='#modal-assis'>Novo assistente</a>
                       </div>
                       <?php
-                      $group_id = $_SESSION["group_id"];
+                      $group_id = $id_group;
                       $sqlUsers = "SELECT * FROM users WHERE group_id = $group_id AND id <> " . $user_id;
                       $execUsers = mysqli_query($conn, $sqlUsers);
                       while ($row = mysqli_fetch_array($execUsers)) {
@@ -150,11 +151,18 @@ $user_id = $_SESSION["id"];
         <div class="modal-body">
           <div class="container">
             <input type="hidden" name="id" value="<?= $user_id ?>" />
-            <input type="hidden" name="group" value="<?= $_SESSION["group_id"] ?>" />
+            <input type="hidden" name="group" value="<?= $id_group ?>" />
 
             <div class="form-group">
               <label for="dias" class="font-weight-bold">Período desejável (Dias)</label>
               <input type="number" name="dias" id="dias" class="form-control" min="5" required />
+              <?php
+                $sqlGroups = "SELECT * FROM users WHERE group_id=$id_group";
+                $execG = mysqli_query($conn, $sqlGroups);
+                $totalUsers = mysqli_num_rows($execG);
+                $totalUsersReal = $totalUsers-1;
+              ?>
+              <input type="hidden" name="assistentes" id="assistentes" value="<?=$totalUsersReal?>" />
             </div>
 
             <div class="form-group text-center font-weight-bold" id="custo" style="font-size: 1.3rem;">
@@ -162,10 +170,11 @@ $user_id = $_SESSION["id"];
             </div>
 
             <div class="alert alert-warning text-center">
-              <strong>1 Dia = R$ 1,20</strong>
+              <strong>1 Dia = R$ 1,20</strong> <br>
+              <small>*Adicional de R$ 0,40/dia para cada assistente*</small>
             </div>
             <div class="alert alert-danger text-center">
-              <strong>O valor mínimo de uma renovação é de R$ 6,00</strong>
+              <strong>O valor mínimo de uma renovação é de R$ 6,00 / 5 dias</strong>
             </div>
 
             <div class="form-group text-center">
@@ -207,7 +216,7 @@ $user_id = $_SESSION["id"];
         </div>
         <div class="modal-body">
           <div class="container">
-            <input type="hidden" name="group" value="<?= $_SESSION["group_id"] ?>" />
+            <input type="hidden" name="group" value="<?= $id_group ?>" />
 
             <div class="form-group">
               <label for="nome" class="font-weight-bold">Nome</label>
@@ -307,7 +316,9 @@ if (mysqli_num_rows($execV)) {
 <script>
   document.getElementById('dias').addEventListener('input', function() {
     var dias = parseFloat(this.value);
-    var custo = dias * 1.2;
+    var assistentes = document.getElementById("assistentes").value;
+    var assis = parseInt(assistentes);
+    var custo = dias * (1.2 + (assis*0.4));
     var custoFormatado = isNaN(custo) ? 'Valor estimado R$ 0,00' : 'Valor estimado R$ ' + custo.toFixed(2).replace('.', ',');
     var custoPagar = isNaN(custo) ? 'R$ 0,00' : 'Pagar R$ ' + custo.toFixed(2).replace('.', ',');
     document.getElementById('custo').textContent = custoFormatado;
@@ -318,7 +329,7 @@ if (mysqli_num_rows($execV)) {
       document.getElementById("pagamento").disabled = false;
     } else {
       document.getElementById("pagamento").disabled = true;
-      document.getElementById("pagamento").textContent = "Valor mínimo R$ 6,00";
+      document.getElementById("pagamento").textContent = "Valor mínimo R$ 6,00 / 5 dias";
     }
   });
 </script>

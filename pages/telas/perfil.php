@@ -157,12 +157,12 @@ $id_group = $_SESSION["group_id"];
               <label for="dias" class="font-weight-bold">Período desejável (Dias)</label>
               <input type="number" name="dias" id="dias" class="form-control" min="5" required />
               <?php
-                $sqlGroups = "SELECT * FROM users WHERE group_id=$id_group";
-                $execG = mysqli_query($conn, $sqlGroups);
-                $totalUsers = mysqli_num_rows($execG);
-                $totalUsersReal = $totalUsers-1;
+              $sqlGroups = "SELECT * FROM users WHERE group_id=$id_group";
+              $execG = mysqli_query($conn, $sqlGroups);
+              $totalUsers = mysqli_num_rows($execG);
+              $totalUsersReal = $totalUsers - 1;
               ?>
-              <input type="hidden" name="assistentes" id="assistentes" value="<?=$totalUsersReal?>" />
+              <input type="hidden" name="assistentes" id="assistentes" value="<?= $totalUsersReal ?>" />
             </div>
 
             <div class="form-group text-center font-weight-bold" id="custo" style="font-size: 1.3rem;">
@@ -232,6 +232,15 @@ $id_group = $_SESSION["group_id"];
             <div class="form-group">
               <label for="cpf" class="font-weight-bold">CPF</label>
               <input type="text" name="cpf" id="cpf" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+              <label for="permissao" class="font-weight-bold">Perfil de Administrador <i class='fas fa-info-circle text-secondary' data-bs-toggle='tooltip' title='O usuário poderá criar e editar planilhas além de criar e bloquear assisentes.'></i></label>
+              <select class="form-control" name="permissao" id="permissao" required>
+                <option value="">  </option>
+                <option value="1"> Sim </option>
+                <option value="2"> Não </option>
+              </select>
             </div>
 
             <div class="form-group">
@@ -318,7 +327,7 @@ if (mysqli_num_rows($execV)) {
     var dias = parseFloat(this.value);
     var assistentes = document.getElementById("assistentes").value;
     var assis = parseInt(assistentes);
-    var custo = dias * (1.2 + (assis*0.4));
+    var custo = dias * (1.2 + (assis * 0.4));
     var custoFormatado = isNaN(custo) ? 'Valor estimado R$ 0,00' : 'Valor estimado R$ ' + custo.toFixed(2).replace('.', ',');
     var custoPagar = isNaN(custo) ? 'R$ 0,00' : 'Pagar R$ ' + custo.toFixed(2).replace('.', ',');
     document.getElementById('custo').textContent = custoFormatado;

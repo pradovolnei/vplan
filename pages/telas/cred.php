@@ -29,6 +29,7 @@
 
 <?php
   include "pages/telas/parcelas.php";
+  include ("connect.php");
 ?>
 
 <div class="container py-5">
@@ -130,7 +131,7 @@
 </div>
 
 <script>
-  const mp = new MercadoPago("APP_USR-e4859647-cd2a-49b9-b8c5-922b3d312936");
+  const mp = new MercadoPago(<?=$token_id?>);
 
   document.getElementById("paymentForm").addEventListener("submit", function(event) {
     event.preventDefault(); // Impede o envio imediato do formulário

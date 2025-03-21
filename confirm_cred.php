@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     include("functions.php");
     session_start(); // Certifique-se de iniciar a sessão
     $token = $_POST['token']; // O token do cartão gerado pelo front-end
-    $access_token = "APP_USR-3159248105241363-022110-66589ec1596ff28a91b3e2b1c6c88ae0-2280185227";
+    $access_token = $secret_token;
     $cpf = str_replace([".", "-"], "", $_POST["cpf"]);
     $bandeira = $_POST["bandeira"];
     $valor = floatval(36);

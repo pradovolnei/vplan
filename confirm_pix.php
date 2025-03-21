@@ -62,7 +62,7 @@ curl_setopt_array($curl, array(
   curl_setopt($curl, CURLOPT_POSTFIELDS, $json_data),
   CURLOPT_HTTPHEADER => array(
     'Content-Type: application/json',
-    'Authorization: Bearer APP_USR-3159248105241363-022110-66589ec1596ff28a91b3e2b1c6c88ae0-2280185227',
+    'Authorization: Bearer '.$secret_token,
     'X-Idempotency-Key: ' . uniqid()
   ),
 ));

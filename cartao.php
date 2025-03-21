@@ -39,10 +39,13 @@
   <link rel="stylesheet" href="plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
   <link rel="stylesheet" href="plugins/jsgrid/jsgrid.min.css">
   <link rel="stylesheet" href="plugins/jsgrid/jsgrid-theme.min.css">
+  <link rel="icon" href="dist/img/logo-sheet-mini.png" type="image/png">
 </head>
 
 <body>
-
+  <?php
+    include ("connect.php");
+  ?>
   <!-- Menu de navegação -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <div class="container">
@@ -232,7 +235,7 @@
   <script src="https://sdk.mercadopago.com/js/v2"></script>
 
   <script>
-    const mp = new MercadoPago("APP_USR-e4859647-cd2a-49b9-b8c5-922b3d312936");
+    const mp = new MercadoPago(<?=$token_id?>);
 
     document.getElementById("paymentForm").addEventListener("submit", function(event) {
       event.preventDefault(); // Impede o envio imediato do formulário

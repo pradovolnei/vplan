@@ -124,15 +124,16 @@ $id_nivel = $_SESSION["type"];
           <div class="card-body table-responsive p-3">
             <?php
             $group_id = $_SESSION["group_id"];
-            $sql = "SELECT p.id, p.name, p.created_at, u.name as 'user', p.obs FROM plans p LEFT JOIN users u ON u.id = p.created_by WHERE p.group_id=$group_id AND deleted_at IS NULL ORDER BY p.created_at DESC";
+            $sql = "SELECT p.id, p.name, p.created_at, u.name as 'user', p.obs FROM plans p LEFT JOIN users u ON u.id = p.created_by WHERE p.group_id=$group_id AND deleted_at IS NULL ";
             if (isset($_GET["s"])) {
               $string_s = $_GET["s"];
               $sql .= " AND (p.name LIKE '%$string_s%' OR u.name LIKE '%$string_s%')";
             }
+            $sql .= " ORDER BY p.created_at DESC";
             $exec = mysqli_query($conn, $sql);
 
             if (mysqli_num_rows($exec) > 0) {
-              ?>
+            ?>
               <table class="table table-hover table-bordered text-center" id="myTable">
                 <thead class="thead-dark">
                   <tr>
@@ -146,27 +147,37 @@ $id_nivel = $_SESSION["type"];
                   <?php
                   while ($row = mysqli_fetch_array($exec)) {
                     echo "<tr>";
-                    echo "<td>" . $row["name"] . "</td>";
+                    echo "<td>" . $row["name"] . " ";
+                    if (!empty($row["obs"])) {
+                      echo "<i class='fas fa-info-circle text-secondary' data-bs-toggle='tooltip' title='" . htmlspecialchars($row["obs"]) . "'></i>";
+                    }
+                    echo "</td>";
                     echo "<td>" . date("d/m/Y H:i", strtotime($row["created_at"])) . "</td>";
                     echo "<td>" . $row["user"] . "</td>";
                     echo "<td>";
-                    ?>
-                    <a class='text-primary mx-1' title="Visualizar"
-                      href='?l=<?= base64_encode(5) . "&p=" . base64_encode($row["id"]) ?>'><i class='fas fa-eye'></i></a>
+                  ?>
+                    <a class='text-primary mx-1' title="Visualizar" href='?l=<?= base64_encode(5) . "&p=" . base64_encode($row["id"]) ?>'><i class='fas fa-eye'></i></a>
                     <?php if ($id_nivel == 1) { ?>
                       <a class='text-success mx-1' title='Editar' href='#' data-toggle='modal' data-target='#modal-edit'
-                        data-obs='<?= $row["obs"] ?>' data-id='<?= $row["id"] ?>' data-nome='<?= $row["name"] ?>'><i
-                          class='fas fa-pen'></i></a>
+                        data-obs='<?= $row["obs"] ?>' data-id='<?= $row["id"] ?>' data-nome='<?= $row["name"] ?>'><i class='fas fa-pen'></i></a>
                       <a class='text-danger mx-1' title="Remover" href='#'
-                        onclick='confirmDelete(event, "<?= base64_encode(7) ?>", "<?= base64_encode($row["id"]) ?>")'><i
-                          class='fas fa-trash'></i></a>
-                    <?php }
+                        onclick='confirmDelete(event, "<?= base64_encode(7) ?>", "<?= base64_encode($row["id"]) ?>")'><i class='fas fa-trash'></i></a>
+                  <?php }
                     echo "</td></tr>";
                   }
                   ?>
                 </tbody>
               </table>
-              <?php
+              <script>
+                // Inicializa os tooltips do Bootstrap
+                document.addEventListener('DOMContentLoaded', function() {
+                  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                  var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                  });
+                });
+              </script>
+            <?php
             } else {
               echo "<h5 class='text-center text-muted'>Nenhuma planilha encontrada.</h5>";
             }
@@ -177,6 +188,7 @@ $id_nivel = $_SESSION["type"];
     </div>
   </div>
 </section>
+
 
 
 <!-- Modal -->
@@ -261,7 +273,7 @@ $id_nivel = $_SESSION["type"];
 
     // Adiciona opções ao select
     var opcoes = ['Texto', 'Número Inteiro', 'Número Decimal', 'Data', 'Data/Hora', 'Lista Suspensa'];
-    opcoes.forEach(function (opcao) {
+    opcoes.forEach(function(opcao) {
       var option = document.createElement('option');
       option.value = opcao.toLowerCase();
       option.textContent = opcao;
@@ -280,7 +292,7 @@ $id_nivel = $_SESSION["type"];
     removeBtn.classList.add('btn', 'btn-danger');
 
     // Adiciona evento para remover a linha quando o botão for clicado
-    removeBtn.addEventListener('click', function () {
+    removeBtn.addEventListener('click', function() {
       rowDiv.remove();
     });
 
@@ -294,7 +306,6 @@ $id_nivel = $_SESSION["type"];
     // Adiciona o div 'row' ao container principal
     document.getElementById('inputContainer').appendChild(rowDiv);
   }
-
 </script>
 
 <script>
@@ -303,7 +314,9 @@ $id_nivel = $_SESSION["type"];
       "language": {
         "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json" // Tradução para português (opcional)
       },
-      "order": [[1, "desc"]] // Ordenação inicial pela segunda coluna (criada em) em ordem decrescente
+      "order": [
+        [1, "desc"]
+      ] // Ordenação inicial pela segunda coluna (criada em) em ordem decrescente
     });
   });
 </script>
